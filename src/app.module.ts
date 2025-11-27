@@ -1,12 +1,25 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from 'src/shared/services/prisma.service';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { HttpExceptionFilter } from 'src/shared/filters/custom-zod-filter.pipe';
+import MyZodValidationPipe from 'src/shared/pipe/custom-zod-validation.pipe';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SharedModule } from './shared/shared.module';
+import { AuthController } from './routes/auth/auth.controller';
+import { AuthModule } from './routes/auth/auth.module';
 
 @Module({
-  imports: [SharedModule],
-  controllers: [AppController],
-  providers: [PrismaService, AppService],
+  imports: [AuthModule],
+  controllers: [AuthController, AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_PIPE,
+      useClass: MyZodValidationPipe,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
