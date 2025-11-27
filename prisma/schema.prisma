@@ -232,14 +232,14 @@ model Review {
 
 model Role {
   id                          Int          @id @default(autoincrement())
-  name                        String       @db.VarChar(500)
+  name                        String       @unique @db.VarChar(500)
   description                 String
   isActive                    Boolean      @default(true)
   createdById                 Int?
   updatedById                 Int?
   deletedAt                   DateTime?
   createdAt                   DateTime     @default(now())
-  updatedAt                   DateTime
+  updatedAt                   DateTime     @updatedAt
   User_Role_createdByIdToUser User?        @relation("Role_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
   User_Role_updatedByIdToUser User?        @relation("Role_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
   User_User_roleIdToRole      User[]       @relation("User_roleIdToRole")
@@ -280,7 +280,7 @@ model User {
   updatedById                                               Int?
   deletedAt                                                 DateTime?
   createdAt                                                 DateTime              @default(now())
-  updatedAt                                                 DateTime
+  updatedAt                                                 DateTime              @updatedAt
   Brand_Brand_createdByIdToUser                             Brand[]               @relation("Brand_createdByIdToUser")
   Brand_Brand_updatedByIdToUser                             Brand[]               @relation("Brand_updatedByIdToUser")
   BrandTranslation_BrandTranslation_createdByIdToUser       BrandTranslation[]    @relation("BrandTranslation_createdByIdToUser")
