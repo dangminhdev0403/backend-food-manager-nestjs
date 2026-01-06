@@ -129,4 +129,53 @@ export class AuthService {
 
     return tokens;
   }
+
+  async refreshToken(refreshToken: string, meta: { userAgent: string; ip: string }) {
+    try {
+      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
+      const refreshTokenDb = await this.authRepository.findUniqueRefreshToken({ token: refreshToken });
+      if (!refreshTokenDb) throw new UnauthorizedException('Refresh token đã sử dụng');
+      const {
+        deviceId,
+        User: { Role_User_roleIdToRole },
+      } = refreshTokenDb;
+
+      const $updateDevice = this.authRepository.updateDevice(
+        {
+          ip: meta.ip,
+          userAgent: meta.userAgent,
+        },
+        { id: deviceId },
+      );
+
+      const $deleteRefreshToken = this.authRepository.deleteRefreshToken({ token: refreshToken });
+      const $token = this.generateTokens({
+        deviceId,
+        userId,
+        roleId: Role_User_roleIdToRole.id,
+        roleName: Role_User_roleIdToRole.name,
+      });
+
+      const [, , token] = await Promise.all([$deleteRefreshToken, $deleteRefreshToken, $token]);
+      const refreshTokenDecoded = await this.tokenService.verifyRefreshToken(token.refreshToken);
+
+      await this.authRepository.createRefreshToken({
+        token: (await $token).refreshToken,
+        User: {
+          connect: {
+            id: userId,
+          },
+        },
+        device: {
+          connect: {
+            id: deviceId,
+          },
+        },
+        expiresAt: new Date(refreshTokenDecoded.exp * 1000),
+      });
+      return token;
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
+  }
 }

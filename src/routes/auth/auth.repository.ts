@@ -63,15 +63,6 @@ export class AuthRepository {
   async createRefreshToken(data: Prisma.RefreshTokenCreateInput): Promise<RefreshToken> {
     return this.prismaService.refreshToken.create({ data });
   }
-  // async findUniqueUserIncludeRole(uniqueObject: { email: string } | { id: number }): Promise<UserType | null> {
-  //   return this.prismaService.user.findUnique({
-  //     where: uniqueObject,
-  //     include: {
-  //       Role_User_roleIdToRole: true,
-  //     },
-  //   });
-  // }
-
   async findUniqueUserIncludeRole(
     where: { email: string } | { id: number },
   ): Promise<(UserType & { Role_User_roleIdToRole: RoleType }) | null> {
@@ -80,6 +71,34 @@ export class AuthRepository {
       include: {
         Role_User_roleIdToRole: true,
       },
+    });
+  }
+  async findUniqueRefreshToken(where: Prisma.RefreshTokenWhereUniqueInput) {
+    return await this.prismaService.refreshToken.findUnique({
+      where,
+      select: {
+        expiresAt: true,
+        deviceId: true,
+        User: {
+          select: {
+            id: true,
+            Role_User_roleIdToRole: true,
+          },
+        },
+        token: true,
+      },
+    });
+  }
+
+  async updateDevice(data: Partial<DeviceType>, deviceId: Pick<Prisma.DeviceWhereUniqueInput, 'id'>) {
+    return await this.prismaService.device.update({
+      data,
+      where: deviceId,
+    });
+  }
+  async deleteRefreshToken(token: Pick<Prisma.RefreshTokenWhereUniqueInput, 'token'>) {
+    return await this.prismaService.refreshToken.delete({
+      where: token,
     });
   }
 }
