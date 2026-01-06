@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -18,9 +19,10 @@ const ConfigSchema = z.object({
   REFRESH_TOKEN_EXPIRES_IN: z.string(),
   ACCESS_TOKEN_EXPIRES_IN: z.string(),
   ADMIN_NAME: z.string(),
-  ADMIN_EMAIL: z.string().email(),
+  ADMIN_EMAIL: z.email(),
   ADMIN_PASSWORD: z.string(),
   ADMIN_PHONE: z.string(),
+  OTP_EXPIRES_IN: z.coerce.number(),
 });
 const parseResult = ConfigSchema.safeParse(process.env);
 if (!parseResult.success) {
@@ -28,3 +30,5 @@ if (!parseResult.success) {
   process.exit(1);
 }
 export const envConfig = parseResult.data;
+
+export const generateOTP = () => randomInt(100000, 1000000).toString();

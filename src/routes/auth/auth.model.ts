@@ -1,27 +1,11 @@
-import { UserStatus } from 'src/shared/constants/auth.constant';
+import { RefreshTokenCreateInputObjectZodSchema } from 'generated/zod-validator/schemas';
+import { TypeOfVerfication, UserStatus } from 'src/shared/constants/auth.constant';
+import { UserSchema } from 'src/shared/models/shared-user.model';
 import { z } from 'zod';
 
 // =========================
 // 1. User DB Schema
 // =========================
-export const UserSchema = z.object({
-  id: z.number(),
-  email: z.email(),
-  name: z.string().min(1).max(500),
-  password: z.string().min(6).max(500),
-  totpSecret: z.string().nullable(),
-  phoneNumber: z.string().min(5).max(50).nullable().optional(),
-  avatar: z.string().nullable(),
-  status: z.enum([UserStatus.ACTIVE, UserStatus.INACTIVE, UserStatus.BLOCKED]),
-  roleId: z.number(),
-  createdById: z.number().nullable(),
-  updatedById: z.number().nullable(),
-  deletedAt: z.date().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-});
-
-export type UserType = z.infer<typeof UserSchema>;
 
 // =========================
 // 2. Register Body Schema
@@ -33,6 +17,7 @@ export const RegisterBodySchema = z
     password: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100).optional(),
     phoneNumber: z.string().min(5).max(50).nullable().optional(),
+    code: z.string().length(6).optional(),
   })
   .strict()
   .superRefine(({ password, confirmPassword }, ctx) => {
@@ -45,8 +30,6 @@ export const RegisterBodySchema = z
     }
   });
 
-export type RegisterBodyType = z.infer<typeof RegisterBodySchema>;
-
 // =========================
 // 3. Register Response Schema
 // =========================
@@ -54,8 +37,6 @@ export const RegisterResSchema = UserSchema.omit({
   password: true,
   totpSecret: true,
 });
-
-export type RegisterResType = z.infer<typeof RegisterResSchema>;
 
 // =========================
 // 4. Update User Schema
@@ -82,4 +63,80 @@ export const UpdateUserSchema = z
     }
   });
 
+export const VerifyCationCode = z.object({
+  id: z.number().optional(),
+  email: z.email(),
+  code: z.string().min(1).max(10),
+  type: z.enum([TypeOfVerfication.REGISTER, TypeOfVerfication.FORGOT_PASSWORD]),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+});
+
+export const SendOTPBodySchema = VerifyCationCode.pick({
+  email: true,
+  type: true,
+});
+
+export const LoginBodySchema = UserSchema.pick({
+  email: true,
+  password: true,
+});
+
+export const LoginResSchema = z.object({
+  accessToken: z.string(),
+  refreshToken: z.string(),
+});
+
+export const RefreshTokenBodySchema = z
+  .object({
+    refreshToken: z.string(),
+  })
+  .strict();
+
+export const RefreshTokenResSchema = LoginResSchema;
+
+export const DeviceSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  userAgent: z.string(),
+  ip: z.string(),
+  lastActive: z.date(),
+  createAt: z.date(),
+  isActive: z.boolean(),
+});
+
+export const RoleSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string(),
+  isActive: z.boolean(),
+  createdById: z.number().nullable(),
+  updatedById: z.number().nullable(),
+  deletedAt: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export const RefreshTokenSchema = RefreshTokenCreateInputObjectZodSchema.pick({
+  token: true,
+  userId: true,
+  deviceId: true,
+});
+
+export const LogoutBodySchema = RefreshTokenBodySchema;
+// ================== Type =========================================
+export type RefreshTokenResType = z.infer<typeof RefreshTokenResSchema>;
+export type LoginResType = z.infer<typeof LoginResSchema>;
+export type LoginBodyType = z.infer<typeof LoginBodySchema>;
+export type DeviceType = z.infer<typeof DeviceSchema>;
+export type RefreshTokenBodyType = z.infer<typeof RefreshTokenBodySchema>;
+
+export type RefreshTokenType = z.infer<typeof RefreshTokenSchema>;
+export type RegisterBodyType = z.infer<typeof RegisterBodySchema>;
+export type RegisterResType = z.infer<typeof RegisterResSchema>;
 export type UpdateUserType = z.infer<typeof UpdateUserSchema>;
+export type RoleType = z.infer<typeof RoleSchema>;
+export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>;
+export type VerifyCationCodeType = z.infer<typeof VerifyCationCode>;
+
+export type LogoutBodyType = RegisterBodyType;
