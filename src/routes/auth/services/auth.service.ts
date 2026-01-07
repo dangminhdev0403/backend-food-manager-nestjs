@@ -178,4 +178,24 @@ export class AuthService {
       throw new UnauthorizedException(error);
     }
   }
+
+  async logout(refreshToken: string) {
+    try {
+      const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
+      const deletedRefreshToken = await this.authRepository.deleteRefreshToken({ token: refreshToken });
+      await this.authRepository.updateDevice(
+        {
+          isActive: false,
+        },
+        {
+          id: deletedRefreshToken.deviceId,
+        },
+      );
+      return {
+        message: 'Đăng xuất thành công',
+      };
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
+  }
 }
