@@ -1,6 +1,6 @@
 export const whitelist = [
   /^\/products\/.*/, //! route động  /products/**
-  // /^\/auth\/.*/,
+  /^\/auth\/.*/,
   /^\/trips\/.*/,
   /^\/bookings\/.*/,
   /^\/chat\/.*/,

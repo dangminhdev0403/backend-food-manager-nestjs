@@ -16,9 +16,12 @@ import {
 export class TokenService {
   constructor(private readonly jwtService: JwtService) {} // ✅ sửa tên
 
-  async signAccessToken(payload: AccessTokenPayload): Promise<string> {
-    return await this.jwtService.signAsync(
-      { ...payload, uuid: crypto.randomUUID() },
+  signAccessToken(payload: AccessTokenPayload) {
+    return this.jwtService.signAsync(
+      {
+        ...payload,
+        uuid: crypto.randomUUID(),
+      },
       {
         secret: envConfig.ACCESS_TOKEN_SECRET,
         algorithm: 'HS256',

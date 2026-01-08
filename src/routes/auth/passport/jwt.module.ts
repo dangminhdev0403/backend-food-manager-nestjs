@@ -18,7 +18,7 @@ import { StringValue } from 'ms';
         }
         if (!secret) {
           throw new Error('ACCESS_TOKEN_SECRET is missing');
-        } 
+        }
 
         return {
           secret,

@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 import { CatchEverythingFilter } from 'src/shared/filters/catch-everything.filter';
 import { HttpExceptionFilter } from 'src/shared/filters/custom-zod-filter.pipe';
 import MyZodValidationPipe from 'src/shared/pipe/custom-zod-validation.pipe';
@@ -7,11 +9,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthModule } from './routes/auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 
 @Module({
-  imports: [AuthModule, ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule, AuthModule],
   controllers: [AuthController, AppController],
   providers: [
     AppService,
