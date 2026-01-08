@@ -7,9 +7,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthModule } from './routes/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule],
   controllers: [AuthController, AppController],
   providers: [
     AppService,

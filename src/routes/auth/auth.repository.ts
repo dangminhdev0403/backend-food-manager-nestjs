@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RefreshToken } from 'generated/prisma/browser';
 import { Prisma } from 'generated/prisma/client';
-import { DeviceType, RegisterBodyType, RoleType, VerifyCationCodeType } from 'src/routes/auth/auth.model';
+import { DeviceType, RegisterBodyType, VerifyCationCodeType } from 'src/routes/auth/auth.model';
 import { TypeOfVerficationCodeType } from 'src/shared/constants/auth.constant';
 import { UserType } from 'src/shared/models/shared-user.model';
 import { PrismaService } from 'src/shared/services/prisma.service';
@@ -63,13 +63,27 @@ export class AuthRepository {
   async createRefreshToken(data: Prisma.RefreshTokenCreateInput): Promise<RefreshToken> {
     return this.prismaService.refreshToken.create({ data });
   }
-  async findUniqueUserIncludeRole(
-    where: { email: string } | { id: number },
-  ): Promise<(UserType & { Role_User_roleIdToRole: RoleType }) | null> {
+  async findUniqueUserIncludeRole(where: { email: string } | { id: number }) {
     return this.prismaService.user.findUnique({
       where,
       include: {
         Role_User_roleIdToRole: true,
+      },
+    });
+  }
+
+  async findUserByEmailOrId(
+    where:
+      | { email: string }
+      | {
+          id: number;
+        },
+  ) {
+    return this.prismaService.user.findUnique({
+      where,
+      select: {
+        email: true,
+        password: true,
       },
     });
   }

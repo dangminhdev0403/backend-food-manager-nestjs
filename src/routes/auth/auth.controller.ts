@@ -2,10 +2,10 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, HttpCode, Ip, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Ip, Post, Request, UseGuards } from '@nestjs/common';
 import { ZodSerializerDto } from 'nestjs-zod';
+
 import {
-  LoginBodyDTO,
   LoginResDTO,
   LogoutBodyDTO,
   RefreshTokenBodyDTO,
@@ -13,6 +13,7 @@ import {
   RegisterResDTO,
   SendOTPBodyDTO,
 } from 'src/routes/auth/auth.dto';
+import { LocalAuthGuard } from 'src/routes/auth/passport/guard/local-auth.guard';
 import { AuthService } from 'src/routes/auth/services/auth.service';
 import { UserAgent } from 'src/shared/decorators/user-agent.decoreator';
 
@@ -31,9 +32,10 @@ export class AuthController {
   }
   @Post('login')
   @HttpCode(200)
+  @UseGuards(LocalAuthGuard)
   @ZodSerializerDto(LoginResDTO)
-  async login(@Body() body: LoginBodyDTO, @UserAgent() userAgent: string, @Ip() ip: string) {
-    return await this.authService.login(body, {
+  async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req) {
+    return await this.authService.login(req.user.email, {
       userAgent,
       ip,
     });

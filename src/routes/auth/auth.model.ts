@@ -81,6 +81,9 @@ export const LoginBodySchema = UserSchema.pick({
   email: true,
   password: true,
 });
+export const UserResponseSchema = UserSchema.pick({
+  email: true,
+});
 
 export const LoginResSchema = z.object({
   accessToken: z.string(),

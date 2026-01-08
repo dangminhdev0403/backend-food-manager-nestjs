@@ -5,8 +5,7 @@ https://docs.nestjs.com/providers#services
 import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { addMilliseconds } from 'date-fns';
 import ms from 'ms';
-import { LoginBodyDTO } from 'src/routes/auth/auth.dto';
-import { RegisterBodyType, SendOTPBodyType } from 'src/routes/auth/auth.model';
+import { RegisterBodyType, SendOTPBodyType, UserResponseSchema } from 'src/routes/auth/auth.model';
 import { AuthRepository } from 'src/routes/auth/auth.repository';
 import { RolesService } from 'src/routes/auth/services/roles.service';
 import { envConfig, generateOTP } from 'src/shared/config';
@@ -91,15 +90,31 @@ export class AuthService {
     return await this.tokenService.generateToken(payload);
   }
 
-  async login(body: LoginBodyDTO, meta: { userAgent: string; ip: string }) {
-    const loginUser = await this.authRepository.findUniqueUserIncludeRole({
-      email: body.email,
+  async validateUser(email: string, password: string) {
+    const loginUser = await this.authRepository.findUserByEmailOrId({
+      email,
     });
-    if (!loginUser) throw new UnauthorizedException();
-    const isPassMatch = await this.hashingService.compare(body.password, loginUser.password);
+    if (!loginUser) {
+      throw new UnauthorizedException();
+    }
+    const isPassMatch = await this.hashingService.compare(password, loginUser.password);
     if (!isPassMatch) {
       throw new UnauthorizedException();
     }
+    const parsed = UserResponseSchema.safeParse(loginUser);
+
+    if (!parsed.success) {
+      throw new UnauthorizedException('User schema invalid');
+    }
+
+    return parsed.data;
+  }
+
+  async login(email: string, meta: { userAgent: string; ip: string }) {
+    const loginUser = await this.authRepository.findUniqueUserIncludeRole({
+      email,
+    });
+    if (!loginUser) throw new UnauthorizedException();
     const device = await this.authRepository.createDevice({
       userId: loginUser.id,
       ip: meta.ip,
@@ -129,7 +144,13 @@ export class AuthService {
 
     return tokens;
   }
-
+  async validateUserJWTDecoded(userId: number) {
+    const user = await this.authRepository.findUserByEmailOrId({ id: userId });
+    if (user) {
+      return user; // không trả mật khẩu
+    }
+    throw new Error('Unauthorized');
+  }
   async refreshToken(refreshToken: string, meta: { userAgent: string; ip: string }) {
     try {
       const { userId } = await this.tokenService.verifyRefreshToken(refreshToken);
