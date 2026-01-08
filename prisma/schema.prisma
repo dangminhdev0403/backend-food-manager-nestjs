@@ -149,7 +149,7 @@ model PaymentTransaction {
 model Permission {
   id                                Int        @id @default(autoincrement())
   name                              String     @db.VarChar(500)
-  description                       String
+  description                       String     @default("")
   path                              String     @db.VarChar(1000)
   method                            HTTPMethod
   createdById                       Int?
@@ -160,6 +160,8 @@ model Permission {
   User_Permission_createdByIdToUser User?      @relation("Permission_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
   User_Permission_updatedByIdToUser User?      @relation("Permission_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
   Role                              Role[]
+
+  @@index([deletedAt])
 }
 
 model Product {

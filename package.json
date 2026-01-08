@@ -8,7 +8,10 @@
   "scripts": {
     "initSeeđata": "npx ts-node initailScript",
     "start:dev": "nest start --watch",
+    "prisma: dev": "npx prisma migrate dev",
+    "prisma: migrate-dev": "npx prisma migrate dev --create-only",
     "prisma: studio": "npx prisma studio",
+    "prisma: migration": "npx prisma migration",
     "prisma: push": "npx prisma db push",
     "prisma: generate": "npx prisma generate",
     "build": "nest build",
