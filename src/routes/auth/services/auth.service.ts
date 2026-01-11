@@ -95,11 +95,11 @@ export class AuthService {
       email,
     });
     if (!loginUser) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Thông tin đăng nhập không chính xác");
     }
     const isPassMatch = await this.hashingService.compare(password, loginUser.password);
     if (!isPassMatch) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Thông tin đăng nhập không chính xác");
     }
     const parsed = UserResponseSchema.safeParse(loginUser);
 

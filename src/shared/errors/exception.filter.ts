@@ -10,7 +10,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ZodValidationException } from 'nestjs-zod';
 import { ResponseData } from 'src/shared/Interceptors/tramform.interceptor';
+import { ZodError } from 'zod';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -22,19 +24,37 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let message = 'Lỗi chưa xác định';
 
     switch (true) {
+      // 🟦 Xử lý ZodValidationException trước
+      case exception instanceof ZodValidationException: {
+        status = HttpStatus.BAD_REQUEST;
+        const zodError = exception.getZodError() as ZodError;
+        if (!zodError) {
+          message = 'Invalid request data';
+          break;
+        }
+        const errors = zodError.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        }));
+
+        Logger.error(`❌ Zod validation error`, JSON.stringify(errors), 'ZodValidationException');
+
+        return response.status(status).json({
+          status,
+          error: 'Validation error',
+          message: errors,
+          data: null,
+        });
+      }
+
       case exception instanceof BadRequestException: {
         status = HttpStatus.BAD_REQUEST;
-        const res = exception.getResponse() as { message?: string | string[]; error?: string } | string;
-        if (typeof res === 'object' && res !== null) {
-          if (Array.isArray(res.message)) {
-            message = res.message.join(', ');
-          } else {
-            message = res.message ?? res.error ?? 'Yêu cầu không hợp lệ';
-          }
-        } else if (typeof res === 'string') {
-          message = res;
+        const res = exception.getResponse() as any;
+
+        if (typeof res === 'object') {
+          message = res.message ?? res.error ?? 'Yêu cầu không hợp lệ';
         } else {
-          message = 'Yêu cầu không hợp lệ';
+          message = res || 'Yêu cầu không hợp lệ';
         }
         break;
       }
@@ -53,8 +73,8 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       case exception instanceof HttpException: {
         status = exception.getStatus();
-        const res = exception.getResponse() as { message?: string; error?: string } | string;
-        message = typeof res === 'string' ? res : (res.message ?? res.error ?? 'Lỗi từ HttpException');
+        const res = exception.getResponse() as any;
+        message = typeof res === 'string' ? res : (res.message ?? res.error);
         break;
       }
 
