@@ -1,4 +1,4 @@
-import { BadRequestException, ExecutionContext, Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ZodValidationException } from 'nestjs-zod';
 import { LoginBodySchema } from 'src/routes/auth/auth.model';
@@ -12,8 +12,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
 
     const parsed = LoginBodySchema.safeParse(request.body);
     if (!parsed.success) {
-       throw new ZodValidationException(parsed.error);
-
+      throw new ZodValidationException(parsed.error);
     }
 
     return super.canActivate(context);

@@ -16,17 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    console.log('email herr', email);
 
-    if (!email || !password) {
-      throw new BadRequestException('Email/password is required');
-    }
-
-    // dùng Zod
-    const parsed = LoginBodySchema.safeParse({ email, password });
-    if (!parsed.success) {
-      throw new BadRequestException(parsed.error.issues.map((issue) => issue.message));
-    }
+    
     const user = await this.authService.validateUser(email, password);
 
     return user;

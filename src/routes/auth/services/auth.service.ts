@@ -95,15 +95,19 @@ export class AuthService {
       email,
     });
     if (!loginUser) {
-      throw new UnauthorizedException("Thông tin đăng nhập không chính xác");
+      throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
     const isPassMatch = await this.hashingService.compare(password, loginUser.password);
     if (!isPassMatch) {
-      throw new UnauthorizedException("Thông tin đăng nhập không chính xác");
+      throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
+    console.log('service here', typeof loginUser);
+
     const parsed = UserResponseSchema.safeParse(loginUser);
 
     if (!parsed.success) {
+      console.log(parsed.error.format()); // để xem lỗi
+
       throw new UnauthorizedException('User schema invalid');
     }
 

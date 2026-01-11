@@ -29,7 +29,6 @@ export class AuthController {
   }
   @Post('login')
   @HttpCode(200)
-  @UsePipes(new ZodValidationPipe(LoginBodySchema))
   @UseGuards(LocalAuthGuard)
   @ZodSerializerDto(LoginResDTO)
   async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req) {
