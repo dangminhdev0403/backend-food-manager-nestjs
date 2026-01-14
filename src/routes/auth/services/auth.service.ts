@@ -200,8 +200,13 @@ export class AuthService {
       return {
         message: 'Đăng xuất thành công',
       };
-    } catch (error) {
-      throw new UnauthorizedException(error);
+    } catch {
+      throw new UnauthorizedException({
+        status: 401,
+        error: 'Không thể xoá refresh Token',
+        message: 'Token có thể đã bị đánh cắp',
+        data: null,
+      });
     }
   }
 }

@@ -15,7 +15,6 @@ import { ZodBody } from 'src/shared/decorators/zod_body.decorator';
 
 @Controller('auth')
 export class AuthController {
-  private logger = new Logger(AuthController.name);
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')

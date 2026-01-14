@@ -61,7 +61,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
       case exception instanceof UnauthorizedException: {
         status = HttpStatus.UNAUTHORIZED;
-        message = exception.message || 'Không có quyền';
+        const res = exception.getResponse() as any;
+
+        if (typeof res === 'object') {
+          return response.status(status).json({
+            status,
+            error: res.error ?? 'Unauthorized',
+            message: res.message ?? 'Unauthorized',
+            data: res.data ?? null,
+          });
+        }
+
+        message = res || 'Unauthorized';
         break;
       }
 
