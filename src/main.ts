@@ -22,7 +22,12 @@ function getLocalIp(): string {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new GlobalExceptionFilter());
-
+  app.enableCors({
+    origin: ['http://192.168.1.11:3000', 'http://localhost:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
   // Global Guard: JwtAuthGuard
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformationInterceptor(reflector));
