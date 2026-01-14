@@ -122,7 +122,9 @@ export const RoleSchema = z.object({
 
 export const RefreshTokenSchema = RefreshTokenCreateInputObjectZodSchema.pick({
   token: true,
+  //@ts-ignore
   userId: true,
+  //@ts-ignore
   deviceId: true,
 });
 
