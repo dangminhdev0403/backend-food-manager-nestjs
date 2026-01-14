@@ -1,28 +1,21 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { ZOD_BODY_SCHEMA } from '../decorators/zod_body.decorator';
+import { BadRequestException, PipeTransform, Injectable } from '@nestjs/common';
 import { ZodSchema } from 'zod';
 
 @Injectable()
-export class MyZodValidationPipe implements PipeTransform {
-  constructor(private reflector: Reflector) {}
+export class ZodValidationPipe implements PipeTransform {
+  constructor(private schema: ZodSchema) {}
 
-  transform(value: any, metadata: ArgumentMetadata & { context?: ExecutionContext }) {
-    if (metadata.type !== 'body') return value;
-
-    const context = metadata.context as ExecutionContext;
-    const target = context.getClass();
-    const handler = context.getHandler();
-
-    const schema: ZodSchema | undefined =
-      this.reflector.get(ZOD_BODY_SCHEMA, handler) || this.reflector.get(ZOD_BODY_SCHEMA, target);
-
-    if (!schema) return value;
-
-    const result = schema.safeParse(value);
+  transform(value: unknown) {
+    const result = this.schema.safeParse(value);
 
     if (!result.success) {
-      throw new BadRequestException(result.error.format());
+      throw new BadRequestException({
+        message: 'Validation failed',
+        errors: result.error.issues.map((issue) => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
     }
 
     return result.data;
