@@ -2,16 +2,14 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, HttpCode, Ip, Logger, Post, Request, UseGuards, UsePipes } from '@nestjs/common';
-import { ZodSerializerDto, ZodValidationPipe } from 'nestjs-zod';
+import { Body, Controller, HttpCode, Ip, Post, Request, UseGuards } from '@nestjs/common';
+import { ZodSerializerDto } from 'nestjs-zod';
 
 import { LoginResDTO, LogoutBodyDTO, RegisterBodyDTO, RegisterResDTO, SendOTPBodyDTO } from 'src/routes/auth/auth.dto';
-import { LoginBodySchema } from 'src/routes/auth/auth.model';
 import { JwtRefreshGuard } from 'src/routes/auth/passport/guard/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/routes/auth/passport/guard/local-auth.guard';
 import { AuthService } from 'src/routes/auth/services/auth.service';
 import { UserAgent } from 'src/shared/decorators/user-agent.decoreator';
-import { ZodBody } from 'src/shared/decorators/zod_body.decorator';
 
 @Controller('auth')
 export class AuthController {
