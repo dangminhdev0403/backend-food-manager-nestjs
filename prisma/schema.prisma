@@ -147,22 +147,21 @@ model PaymentTransaction {
 }
 
 model Permission {
-  id                                Int        @id @default(autoincrement())
-  name                              String     @db.VarChar(500)
-  description                       String     @default("")
-  path                              String     @db.VarChar(1000)
-  method                            HTTPMethod
-  createdById                       Int?
-  updatedById                       Int?
-  deletedAt                         DateTime?
-  createdAt                         DateTime   @default(now())
-  updatedAt                         DateTime
-  User_Permission_createdByIdToUser User?      @relation("Permission_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
-  User_Permission_updatedByIdToUser User?      @relation("Permission_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
-  Role                              Role[]
+  id          Int         @id @default(autoincrement())
+  name        String      @db.VarChar(500)
+  description String      @default("")
+  path        String      @db.VarChar(1000)
+  method      HTTPMethod
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  @@index([deletedAt])
+  // Many-to-many with Role
+  Role        Role[]
+  
+  @@unique([method, path])   // đảm bảo không trùng permission theo route
+  @@index([method, path])
 }
+
 
 model Product {
   id                             Int                  @id @default(autoincrement())
@@ -319,8 +318,6 @@ model User {
   Order_Order_createdByIdToUser                             Order[]               @relation("Order_createdByIdToUser")
   Order_Order_updatedByIdToUser                             Order[]               @relation("Order_updatedByIdToUser")
   Order_Order_userIdToUser                                  Order[]               @relation("Order_userIdToUser")
-  Permission_Permission_createdByIdToUser                   Permission[]          @relation("Permission_createdByIdToUser")
-  Permission_Permission_updatedByIdToUser                   Permission[]          @relation("Permission_updatedByIdToUser")
   Product_Product_createdByIdToUser                         Product[]             @relation("Product_createdByIdToUser")
   Product_Product_updatedByIdToUser                         Product[]             @relation("Product_updatedByIdToUser")
   ProductTranslation_ProductTranslation_createdByIdToUser   ProductTranslation[]  @relation("ProductTranslation_createdByIdToUser")
