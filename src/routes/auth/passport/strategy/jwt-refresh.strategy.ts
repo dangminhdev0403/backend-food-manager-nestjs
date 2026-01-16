@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthService } from 'src/routes/auth/services/auth.service';
+import { AuthService } from 'src/routes/auth/auth.service';
 import { UserAgent } from 'src/shared/decorators/user-agent.decoreator';
 import { RefreshTokenDecoded } from 'src/shared/types/jwt.type';
 

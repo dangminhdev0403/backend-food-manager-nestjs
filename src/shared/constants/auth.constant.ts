@@ -1,17 +1,13 @@
 export const whitelist = [
   //! route động  /products/**
   /^\/products\/.*/,
-  /^\/trips\/.*/,
-  /^\/bookings\/.*/,
-  /^\/chat\/.*/,
   /^\/order-result\/.*/,
+  /^\/api\/.*/,
   //! route cứng /products
   '/products',
   '/chat',
   '/',
-  '/auth/login',
-  //! route custom
-  '/^/auth/(?!refresh$|logout$).*/',
+  /^\/auth\/((?!logout|refresh).*)$/,
 ];
 
 export const UserStatus = {

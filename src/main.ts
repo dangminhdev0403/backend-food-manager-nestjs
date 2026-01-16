@@ -1,13 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
-import { Server } from 'http';
-import { AddressInfo } from 'net';
-import * as os from 'os';
+import { Server } from 'node:http';
+import { AddressInfo } from 'node:net';
+import * as os from 'node:os';
 import { JwtAuthGuard } from 'src/routes/auth/passport/guard/jwt-auth.guard';
+import { envConfig } from 'src/shared/config/env.config';
+import { SwaggerConfig } from 'src/shared/config/swagger.config';
 import { GlobalExceptionFilter } from 'src/shared/errors/exception.filter';
 import { TransformationInterceptor } from 'src/shared/Interceptors/tramform.interceptor';
 import { AppModule } from './app.module';
-
 function getLocalIp(): string {
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
@@ -21,6 +22,14 @@ function getLocalIp(): string {
 }
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+ if (SwaggerConfig.enable(app)) {
+  const document = SwaggerConfig.createDocument(app);
+  SwaggerConfig.setup(app, document);
+
+  app.use('/swagger-json', (req, res) => res.json(document));
+}
+
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.enableCors({
     origin: ['http://192.168.1.11:3000', 'http://localhost:3000'],
@@ -33,7 +42,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformationInterceptor(reflector));
   app.useGlobalGuards(new JwtAuthGuard(reflector));
 
-  const port = parseInt(process.env.PORT ?? '3000');
+  const port = Number.parseInt(envConfig.PORT ?? '3000');
   await app.listen(port);
   const server = app.getHttpServer() as Server;
   const address = server.address() as AddressInfo | string;

@@ -147,21 +147,19 @@ model PaymentTransaction {
 }
 
 model Permission {
-  id          Int         @id @default(autoincrement())
-  name        String      @db.VarChar(500)
-  description String      @default("")
-  path        String      @db.VarChar(1000)
-  method      HTTPMethod
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(500)
+  path      String     @db.VarChar(1000)
+  module    String     @default("Unknown") @db.VarChar(1000)
+  method    HTTPMethod
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   // Many-to-many with Role
-  Role        Role[]
-  
-  @@unique([method, path])   // đảm bảo không trùng permission theo route
-  @@index([method, path])
-}
+  Role      Role[]
 
+  @@unique([method, path]) // đảm bảo không trùng permission theo route
+  @@index([method, path, module])
+}
 
 model Product {
   id                             Int                  @id @default(autoincrement())

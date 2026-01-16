@@ -1,58 +1,55 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/shared/services/prisma.service';
+import { Prisma } from 'generated/prisma/client';
 import { HTTPMethod } from 'generated/prisma/enums';
+import { AppModule } from 'src/app.module';
+import { SwaggerConfig } from 'src/shared/config/swagger.config';
+import { PrismaService } from 'src/shared/services/prisma.service';
+import { SwaggerService } from 'src/shared/services/swagger.service';
 
 async function run() {
-  const app = await NestFactory.create(AppModule, { logger: false });
+  const app = await NestFactory.create(AppModule);
 
+  const swaggerService = app.get(SwaggerService);
   const prisma = app.get(PrismaService);
-  const server = app.getHttpAdapter().getInstance();
-  const router = server._router;
 
-  const availableRoutes = router.stack
-    .filter((layer) => layer.route)
-    .map((layer) => {
-      const method = layer.route.stack[0].method.toUpperCase() as keyof typeof HTTPMethod;
-      const path = layer.route.path;
-      return {
-        path,
-        method,
-        name: `${method} ${path}`,
-      };
-    });
+  // CREATE SWAGGER DOCUMENT
+  const document = SwaggerConfig.createDocument(app);
 
-  const permissionInDb = await prisma.permission.findMany();
+  // EXTRACT PERMISSIONS
+  const permissions = swaggerService.extractPermissions(document);
 
-  const dbMap = new Map(permissionInDb.map((p) => [`${p.method}-${p.path}`, p]));
-  const routeMap = new Map(availableRoutes.map((r) => [`${r.method}-${r.path}`, r]));
+  const dbPermissions = await prisma.permission.findMany();
 
-  // FIND TO DELETE
-  const toDelete = permissionInDb.filter((p) => !routeMap.has(`${p.method}-${p.path}`));
+  const dbMap = new Map(dbPermissions.map((p) => [`${p.method}-${p.path}`, p]));
+  const swaggerMap = new Map(permissions.map((r) => [`${r.method}-${r.path}`, r]));
 
+  // REMOVE OLD PERMISSIONS
+  const toDelete = dbPermissions.filter((p) => !swaggerMap.has(`${p.method}-${p.path}`));
   if (toDelete.length > 0) {
-    console.log(`Deleting ${toDelete.length} permission(s)…`);
-
     await prisma.permission.deleteMany({
-      where: {
-        id: { in: toDelete.map((p) => p.id) },
-      },
+      where: { id: { in: toDelete.map((x) => x.id) } },
     });
   }
 
-  // FIND TO ADD
-  const toAdd = availableRoutes.filter((r) => !dbMap.has(`${r.method}-${r.path}`));
+  // ADD NEW PERMISSIONS
 
+  const toAdd = permissions
+    .filter((r) => !dbMap.has(`${r.method}-${r.path}`))
+    .map<Prisma.PermissionCreateManyInput>((p) => ({
+      name: p.name,
+      // description: p.description,
+      path: p.path,
+      method: p.method as HTTPMethod,
+    }));
   if (toAdd.length > 0) {
-    console.log(`Adding ${toAdd.length} permission(s)…`);
-
     await prisma.permission.createMany({
       data: toAdd,
       skipDuplicates: true,
     });
   }
 
-  console.log('Sync completed.');
+  console.log(`Sync DONE. Added: ${toAdd.length}, Removed: ${toDelete.length}`);
+
   await app.close();
   process.exit(0);
 }

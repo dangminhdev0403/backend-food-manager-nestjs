@@ -4,7 +4,7 @@ https://docs.nestjs.com/providers#services
 
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { envConfig } from 'src/shared/config';
+import { envConfig } from 'src/shared/config/env.config';
 import {
   AccessTokenDecoded,
   AccessTokenPayload,

@@ -1,8 +1,8 @@
 import { Logger } from '@nestjs/common';
-import { randomInt } from 'crypto';
 import { config } from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+import { randomInt } from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import { z } from 'zod';
 
 if (!fs.existsSync(path.resolve('.env'))) {
@@ -15,14 +15,16 @@ config({ path: '.env' });
 const ConfigSchema = z.object({
   DATABASE_URL: z.string(),
   ACCESS_TOKEN_SECRET: z.string(),
+  ACCESS_TOKEN_EXPIRES_IN: z.string(),
   REFRESH_TOKEN_SECRET: z.string(),
   REFRESH_TOKEN_EXPIRES_IN: z.string(),
-  ACCESS_TOKEN_EXPIRES_IN: z.string(),
   ADMIN_NAME: z.string(),
   ADMIN_EMAIL: z.email(),
   ADMIN_PASSWORD: z.string(),
   ADMIN_PHONE: z.string(),
   OTP_EXPIRES_IN: z.coerce.number(),
+  PORT: z.string(),
+  NODE_ENV: z.enum(["development","production"])
 });
 const parseResult = ConfigSchema.safeParse(process.env);
 if (!parseResult.success) {

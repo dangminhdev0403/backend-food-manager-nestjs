@@ -1,3 +1,4 @@
+import { RoleModule } from './routes/roles/role.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE, Reflector } from '@nestjs/core';
@@ -11,7 +12,7 @@ import { AuthController } from './routes/auth/auth.controller';
 import { AuthModule } from './routes/auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule, AuthModule],
+  imports: [RoleModule, ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule, AuthModule],
   controllers: [AuthController, AppController],
   providers: [
     AppService,
