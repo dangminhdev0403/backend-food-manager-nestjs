@@ -1,7 +1,7 @@
 import { RoleModule } from './routes/roles/role.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE, Reflector } from '@nestjs/core';
+import { APP_FILTER, APP_PIPE, DiscoveryModule, Reflector } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 import { CatchEverythingFilter } from 'src/shared/filters/catch-everything.filter';
@@ -12,7 +12,7 @@ import { AuthController } from './routes/auth/auth.controller';
 import { AuthModule } from './routes/auth/auth.module';
 
 @Module({
-  imports: [RoleModule, ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule, AuthModule],
+  imports: [RoleModule, ConfigModule.forRoot({ isGlobal: true }), JwtGlobalModule, AuthModule, DiscoveryModule],
   controllers: [AuthController, AppController],
   providers: [
     AppService,
