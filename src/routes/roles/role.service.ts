@@ -2,9 +2,10 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable, Logger } from '@nestjs/common';
-import { RoleCreateBodyDTO } from 'src/routes/roles/role.dto';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
+import { RoleCreateBodyDTO, RoleUpdateBodyDTO } from 'src/routes/roles/role.dto';
 import { RoleRepository } from 'src/routes/roles/role.repository';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { handleRecordNotFoundError, handleUniqueConstraintError } from 'src/shared/errors/primsa.error';
 
 @Injectable()
@@ -26,5 +27,36 @@ export class RoleService {
     }
   }
 
-  async getListRole(userId: number) {}
+  async getListRole(userId: number, pagable: PaginationDTOQuery) {
+    return await this.roleRepository.getListRoleByUserId(userId, pagable);
+  }
+
+  async updateRole(userId: number, roleUpdate: RoleUpdateBodyDTO) {
+    try {
+      await this.blockWithSystemRole(roleUpdate);
+      return await this.roleRepository.updateRole(userId, roleUpdate);
+    } catch (error) {
+      handleUniqueConstraintError(error, `Tên quyền đã tồn tại`, `Quyền ${roleUpdate.name} đã tồn tại`);
+      handleRecordNotFoundError(error, `Truyền sai permisonsId`, `Danh sách permisonsId chứa Id không tồn tại`);
+      throw error;
+    }
+  }
+  async deleteRole(userId: number, roleUpdate: RoleUpdateBodyDTO) {
+    try {
+      await this.blockWithSystemRole(roleUpdate);
+
+      return await this.roleRepository.deleteRole(userId, roleUpdate);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async blockWithSystemRole(data: { id: number }) {
+    const role = await this.roleRepository.findSystemRole(data.id);
+    if (role.isSystem === true)
+      throw new ForbiddenException({
+        error: 'Không thể thao tác',
+        message: 'Bạn không được phép thao tác',
+      });
+  }
 }

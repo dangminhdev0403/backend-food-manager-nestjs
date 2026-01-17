@@ -2,11 +2,12 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Get, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post, Put, Query, Request } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RoleCreateBodyDTO } from 'src/routes/roles/role.dto';
+import { RoleCreateBodyDTO, RoleUpdateBodyDTO } from 'src/routes/roles/role.dto';
 import { RoleService } from 'src/routes/roles/role.service';
 import { UserInRequest } from 'src/shared/constants/auth.constant';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 @ApiTags('Roles')
 @Controller('roles')
 export class RoleController {
@@ -18,8 +19,20 @@ export class RoleController {
     return await this.roleService.createRole(roleInput, req.user.id);
   }
   @Get()
-  @ApiOperation({ summary: 'Role:Create' })
-  async getRole(@Request() req: UserInRequest, @Query('page') page: number, @Query('size') size: number) {
-    return await this.roleService.getListRole(req.user.id);
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Role:Get List' })
+  async getRole(@Request() req: UserInRequest, @Query() query: PaginationDTOQuery) {
+    return await this.roleService.getListRole(req.user.id, query);
+  }
+  @Put()
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Role:Update' })
+  async updateRole(@Request() req: UserInRequest, @Body() data: RoleUpdateBodyDTO) {
+    return await this.roleService.updateRole(req.user.id, data);
+  }
+  @Delete()
+  @ApiOperation({ summary: 'Role:Delete' })
+  async deleteRole(@Request() req: UserInRequest, @Body() data: RoleUpdateBodyDTO) {
+    return await this.roleService.deleteRole(req.user.id, data);
   }
 }
