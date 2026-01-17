@@ -2,12 +2,12 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { addMilliseconds } from 'date-fns';
 import ms from 'ms';
 import { RegisterBodyType, SendOTPBodyType, UserResponseSchema } from 'src/routes/auth/auth.model';
 import { AuthRepository } from 'src/routes/auth/auth.repository';
-import { RolesService } from 'src/routes/roles/roles.service';
+import { RoleService } from 'src/routes/roles/role.service';
 import { envConfig, generateOTP } from 'src/shared/config/env.config';
 import { isUniqueConstraintError } from 'src/shared/helpers';
 import { SharedUserRepository } from 'src/shared/repositories/user.repository';
@@ -17,9 +17,10 @@ import { AccessTokenPayload } from 'src/shared/types/jwt.type';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly hashingService: HashingService,
-    private readonly rolesService: RolesService,
+    private readonly RoleService: RoleService,
     private readonly authRepository: AuthRepository,
     private readonly sharedUserRespo: SharedUserRepository,
     private readonly tokenService: TokenService,
@@ -44,16 +45,17 @@ export class AuthService {
 
       const hashedPassword = await this.hashingService.hash(body.password);
 
-      const roleId = await this.rolesService.getClientRoleId();
+      const roleId = await this.RoleService.getClientRoleId();
 
-      return await this.authRepository.createUser({
-        email: body.email,
-        name: body.name,
-        phoneNumber: body.phoneNumber,
-        password: hashedPassword,
-
+      return await this.authRepository.createUser(
+        {
+          email: body.email,
+          name: body.name,
+          phoneNumber: body.phoneNumber,
+          password: hashedPassword,
+        },
         roleId,
-      });
+      );
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         throw new UnprocessableEntityException([
@@ -106,11 +108,10 @@ export class AuthService {
     const parsed = UserResponseSchema.safeParse(loginUser);
 
     if (!parsed.success) {
-      console.log(parsed.error.format()); // để xem lỗi
+      this.logger.error(parsed.error.format()); // để xem lỗi
 
       throw new UnauthorizedException('User schema invalid');
     }
-
     return parsed.data;
   }
 
@@ -127,8 +128,6 @@ export class AuthService {
     const tokens = await this.generateTokens({
       userId: loginUser.id,
       deviceId: loginUser.id,
-      roleId: loginUser.roleId,
-      roleName: loginUser.Role_User_roleIdToRole.name,
     });
     const refreshTokenDecoded = await this.tokenService.verifyRefreshToken(tokens.refreshToken);
     await this.authRepository.createRefreshToken({
@@ -149,21 +148,26 @@ export class AuthService {
     return tokens;
   }
   async validateUserJWTDecoded(id: number) {
-    return this.authRepository.findUserByEmailOrId({ id });
+    const passed = UserResponseSchema.safeParse(await this.authRepository.findUserByEmailOrId({ id }));
+
+    if (!passed.success) {
+      this.logger.error(passed.error.format()); // để xem lỗi
+
+      throw new UnauthorizedException('User schema invalid');
+    }
+    return passed.data;
   }
   async validateUserJWTRefreshDecoded(userId: number, refreshToken: string, meta: { userAgent: string; ip: string }) {
     const refreshTokenDb = await this.authRepository.findUniqueRefreshToken({ token: refreshToken });
     if (!refreshTokenDb) throw new UnauthorizedException('Refresh token đã sử dụng');
     const {
       deviceId,
-      User: { Role_User_roleIdToRole },
+      User: { userRoles },
     } = refreshTokenDb;
     const $deleteRefreshToken = this.authRepository.deleteRefreshToken({ token: refreshToken });
     const $token = this.generateTokens({
       deviceId,
       userId,
-      roleId: Role_User_roleIdToRole.id,
-      roleName: Role_User_roleIdToRole.name,
     });
 
     const [, , token] = await Promise.all([$deleteRefreshToken, $deleteRefreshToken, $token]);

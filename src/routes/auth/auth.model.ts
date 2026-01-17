@@ -43,7 +43,7 @@ export const RegisterResSchema = UserSchema.omit({
 // =========================
 export const UpdateUserSchema = z
   .object({
-    email: z.string().email().optional(),
+    email: z.email().optional(),
     name: z.string().min(1).max(500).optional(),
     password: z.string().min(6).max(100).optional(),
     confirmPassword: z.string().min(6).max(100).optional(),
@@ -82,6 +82,7 @@ export const LoginBodySchema = UserSchema.pick({
   password: true,
 });
 export const UserResponseSchema = UserSchema.pick({
+  id: true,
   email: true,
 });
 

@@ -1,4 +1,4 @@
-import { RolesService } from 'src/routes/roles/roles.service';
+import { RoleService } from 'src/routes/roles/role.service';
 import { RoleController } from './role.controller';
 /*
 https://docs.nestjs.com/modules
@@ -9,7 +9,7 @@ import { RoleRepository } from 'src/routes/roles/role.repository';
 
 @Module({
   controllers: [RoleController],
-  providers: [RolesService, RoleRepository],
-  exports :[RolesService]
+  providers: [RoleService, RoleRepository],
+  exports: [RoleService],
 })
 export class RoleModule {}

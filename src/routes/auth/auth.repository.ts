@@ -11,10 +11,18 @@ export class AuthRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createUser(
-    user: Omit<RegisterBodyType, 'confirmPassword' | 'code'> & Pick<UserType, 'roleId'>,
+    user: Omit<RegisterBodyType, 'confirmPassword' | 'code'>,
+    roleId: number,
   ): Promise<Omit<UserType, 'password' | 'totpSecret'>> {
     return this.prismaService.user.create({
-      data: user,
+      data: {
+        ...user,
+        userRoles: {
+          create: {
+            roleId,
+          },
+        },
+      },
       omit: {
         password: true,
         totpSecret: true,
@@ -67,7 +75,15 @@ export class AuthRepository {
     return this.prismaService.user.findUnique({
       where,
       include: {
-        Role_User_roleIdToRole: true,
+        userRoles: {
+          select: {
+            role: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -82,6 +98,7 @@ export class AuthRepository {
     return this.prismaService.user.findUnique({
       where,
       select: {
+        id: true,
         email: true,
         password: true,
       },
@@ -96,7 +113,7 @@ export class AuthRepository {
         User: {
           select: {
             id: true,
-            Role_User_roleIdToRole: true,
+            userRoles: true,
           },
         },
         token: true,

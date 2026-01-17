@@ -248,20 +248,32 @@ model Review {
   User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+model UserHasRole {
+  userId Int
+  roleId Int
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@map("user_has_role")
+}
+
 model Role {
-  id                          Int          @id @default(autoincrement())
-  name                        String       @unique @db.VarChar(500)
+  id                          Int           @id @default(autoincrement())
+  name                        String        @unique @db.VarChar(500)
   description                 String
-  isActive                    Boolean      @default(true)
+  isActive                    Boolean       @default(true)
   createdById                 Int?
   updatedById                 Int?
   deletedAt                   DateTime?
-  createdAt                   DateTime     @default(now())
-  updatedAt                   DateTime     @updatedAt
-  User_Role_createdByIdToUser User?        @relation("Role_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
-  User_Role_updatedByIdToUser User?        @relation("Role_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
-  User_User_roleIdToRole      User[]       @relation("User_roleIdToRole")
+  createdAt                   DateTime      @default(now())
+  updatedAt                   DateTime      @updatedAt
+  User_Role_createdByIdToUser User?         @relation("Role_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
+  User_Role_updatedByIdToUser User?         @relation("Role_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
   Permission                  Permission[]
+  userRoles                   UserHasRole[]
 }
 
 model SKU {
@@ -292,8 +304,8 @@ model User {
   phoneNumber                                               String?               @db.VarChar(50)
   avatar                                                    String?               @db.VarChar(1000)
   totpSecret                                                String?               @unique @db.VarChar(1000)
+  userRoles                                                 UserHasRole[]
   status                                                    UserStatus            @default(INACTIVE)
-  roleId                                                    Int
   createdById                                               Int?
   updatedById                                               Int?
   deletedAt                                                 DateTime?
@@ -328,7 +340,6 @@ model User {
   SKU_SKU_updatedByIdToUser                                 SKU[]                 @relation("SKU_updatedByIdToUser")
   User_User_createdByIdToUser                               User?                 @relation("User_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
   other_User_User_createdByIdToUser                         User[]                @relation("User_createdByIdToUser")
-  Role_User_roleIdToRole                                    Role                  @relation("User_roleIdToRole", fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   User_User_updatedByIdToUser                               User?                 @relation("User_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
   other_User_User_updatedByIdToUser                         User[]                @relation("User_updatedByIdToUser")
   UserTranslation_UserTranslation_createdByIdToUser         UserTranslation[]     @relation("UserTranslation_createdByIdToUser")

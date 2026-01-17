@@ -1,3 +1,10 @@
+export interface UserInRequest {
+  user: {
+    id: number;
+    name: string;
+  };
+}
+
 export const whitelist = [
   //! route động  /products/**
   /^\/products\/.*/,

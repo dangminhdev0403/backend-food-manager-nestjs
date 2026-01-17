@@ -1,8 +1,7 @@
 export interface AccessTokenPayload {
   userId: number;
   deviceId: number;
-  roleId: number;
-  roleName: string;
+ 
 }
 export interface RefreshTokenPayload {
   userId: number;

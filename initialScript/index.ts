@@ -11,7 +11,6 @@ const main = async () => {
   await initialRole(prisma, hashingService);
   Logger.log('Initializing Permissions...');
   await initialPermission(prisma);
-
   return 'Initialization completed successfully';
 };
 

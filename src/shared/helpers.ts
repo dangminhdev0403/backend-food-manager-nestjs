@@ -1,31 +1,9 @@
-import { RequestMethod } from '@nestjs/common';
 import 'reflect-metadata';
 
 import { DiscoveryService } from '@nestjs/core';
 import { Prisma } from 'generated/prisma/client';
 import { whitelist } from 'src/shared/constants/auth.constant';
-
-const METHOD_MAP = {
-  [RequestMethod.GET]: 'GET',
-  [RequestMethod.POST]: 'POST',
-  [RequestMethod.PUT]: 'PUT',
-  [RequestMethod.DELETE]: 'DELETE',
-  [RequestMethod.PATCH]: 'PATCH',
-  [RequestMethod.ALL]: 'ALL',
-  [RequestMethod.OPTIONS]: 'OPTIONS',
-  [RequestMethod.HEAD]: 'HEAD',
-};
-
-interface RouteMeta {
-  controller: string;
-  controllerPath: string;
-  tags: string[];
-  methodName: string;
-  httpMethod: string | null;
-  routePath: string | null;
-  fullPath: string;
-  summary: string;
-}
+import { METHOD_MAP, RouteMeta } from 'src/shared/constants/initialize.constant';
 
 // Predicate to check for unique constraint errors , web check code error : https://www.prisma.io/docs/orm/reference/error-reference
 export function isUniqueConstraintError(error: any): error is Prisma.PrismaClientKnownRequestError {

@@ -82,7 +82,11 @@ export async function initialRole(prisma: PrismaService, hashingService: Hashing
         password: hasshedPass,
         name: 'Admin User',
         phoneNumber: envConfig.ADMIN_PHONE,
-        roleId: adminRole.id,
+        userRoles: {
+          create: {
+            roleId: adminRole.id,
+          },
+        },
       },
     });
     Logger.log('====Data Admin User created======');

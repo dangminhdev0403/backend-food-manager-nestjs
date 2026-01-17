@@ -10,16 +10,18 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { Prisma } from 'generated/prisma/client';
 import { ZodValidationException } from 'nestjs-zod';
-import { ResponseData } from 'src/shared/Interceptors/tramform.interceptor';
+import { ResponseData } from 'src/shared/constants/response.constant';
 import { ZodError } from 'zod';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  private readonly logger = new Logger(GlobalExceptionFilter.name);
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-
+    let error: any = null;
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Lỗi chưa xác định';
 
@@ -50,9 +52,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case exception instanceof BadRequestException: {
         status = HttpStatus.BAD_REQUEST;
         const res = exception.getResponse() as any;
-
         if (typeof res === 'object') {
-          message = res.message ?? res.error ?? 'Yêu cầu không hợp lệ';
+          error = res?.error;
+          message = res?.message;
         } else {
           message = res || 'Yêu cầu không hợp lệ';
         }
@@ -81,7 +83,37 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = exception.message || 'Không tìm thấy';
         break;
       }
+      case exception instanceof Prisma.PrismaClientKnownRequestError: {
+        switch (exception.code) {
+          case 'P2002':
+            return response.status(HttpStatus.CONFLICT).json({
+              status: 409,
+              error: 'Unique constraint violated',
+              message: exception,
+            });
 
+          case 'P2003':
+            return response.status(HttpStatus.BAD_REQUEST).json({
+              status: 400,
+              error: 'Foreign key constraint failed',
+              message: exception.meta?.field,
+            });
+
+          case 'P2025':
+            return response.status(HttpStatus.BAD_REQUEST).json({
+              status: 400,
+              error: 'Record is invalid',
+              message: 'An operation failed because it depends on one or more records that were required but not found',
+            });
+
+          default:
+            return response.status(500).json({
+              status: 500,
+              error: 'Prisma error',
+              message: exception.message,
+            });
+        }
+      }
       case exception instanceof HttpException: {
         status = exception.getStatus();
         const res = exception.getResponse() as any;
@@ -100,9 +132,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
     }
 
-    Logger.error(`❌ Lỗi: ${message}`, (exception as any)?.stack, 'ExceptionFilter');
-
-    const responseData = new ResponseData(status, message, message, null);
+    Logger.error(`❌ Lỗi: ${message}`, exception?.stack, 'ExceptionFilter');
+    Logger.debug(`${JSON.stringify(exception.getResponse())}`, 'ExceptionError');
+    const responseData = new ResponseData(status, error ?? message, message, null);
     response.status(status).json(responseData);
   }
 }
