@@ -73,7 +73,7 @@ export async function initialRole(prisma: PrismaService, hashingService: Hashing
     });
     const hasshedPass = await hashingService.hash(envConfig.ADMIN_PASSWORD);
     const adminRole = await prisma.role.findFirstOrThrow({
-      where: { name: RoleName.Admin },
+      where: { name: RoleName.Admin, isSystem: true },
     });
     Logger.log('====Data Admin Role created======');
     const adminUser = await prisma.user.create({
@@ -82,6 +82,7 @@ export async function initialRole(prisma: PrismaService, hashingService: Hashing
         password: hasshedPass,
         name: 'Admin User',
         phoneNumber: envConfig.ADMIN_PHONE,
+
         userRoles: {
           create: {
             roleId: adminRole.id,

@@ -132,7 +132,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
     }
 
-    Logger.error(`❌ Lỗi: ${message}`, exception?.stack, 'ExceptionFilter');
+    Logger.error(`❌ Lỗi: ${message}`, JSON.stringify(exception?.stack), 'ExceptionFilter');
     Logger.debug(`${JSON.stringify(exception.getResponse())}`, 'ExceptionError');
     const responseData = new ResponseData(status, error ?? message, message, null);
     response.status(status).json(responseData);

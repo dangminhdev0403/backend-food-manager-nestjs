@@ -14,6 +14,8 @@ export const RoleUpdateSchema = RoleCreateSchema.partial()
   .extend({
     id: z.number(),
     isActive: z.boolean().optional(),
+    addPermissionIds: z.array(z.number()).optional(),
+    removePermissionIds: z.array(z.number()).optional(),
   })
 
   .strict();

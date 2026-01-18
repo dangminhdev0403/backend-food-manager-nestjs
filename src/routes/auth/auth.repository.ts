@@ -13,7 +13,21 @@ export class AuthRepository {
   async createUser(
     user: Omit<RegisterBodyType, 'confirmPassword' | 'code'>,
     roleId: number,
-  ): Promise<Omit<UserType, 'password' | 'totpSecret'>> {
+  ): Promise<
+    Omit<
+      UserType,
+      | 'password'
+      | 'totpSecret'
+      | 'avatar'
+      | 'createdAt'
+      | 'createdById'
+      | 'deletedAt'
+      | 'updatedAt'
+      | 'id'
+      | 'status'
+      | 'updatedById'
+    >
+  > {
     return this.prismaService.user.create({
       data: {
         ...user,
@@ -26,6 +40,14 @@ export class AuthRepository {
       omit: {
         password: true,
         totpSecret: true,
+        avatar: true,
+        createdAt: true,
+        createdById: true,
+        deletedAt: true,
+        updatedAt: true,
+        updatedById: true,
+        id: true,
+        status: true,
       },
     });
   }
@@ -79,6 +101,7 @@ export class AuthRepository {
           select: {
             role: {
               select: {
+                id: true,
                 name: true,
               },
             },

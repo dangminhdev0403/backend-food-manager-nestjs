@@ -155,7 +155,7 @@ model Permission {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   // Many-to-many with Role
-  Role      Role[]
+   roles   RolePermission[]
 
   @@unique([method, path]) // đảm bảo không trùng permission theo route
   @@index([method, path, module])
@@ -259,6 +259,16 @@ model UserHasRole {
   @@index([roleId])
   @@map("user_has_role")
 }
+model RolePermission {
+  roleId       Int
+  permissionId Int
+
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+}
 
 model Role {
   id          Int     @id @default(autoincrement())
@@ -275,7 +285,7 @@ model Role {
 
   User_Role_createdByIdToUser User?         @relation("Role_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
   User_Role_updatedByIdToUser User?         @relation("Role_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
-  Permission                  Permission[]
+   permissions RolePermission[]
   userRoles                   UserHasRole[]
 }
 

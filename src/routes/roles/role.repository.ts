@@ -23,6 +23,17 @@ export class RoleRepository {
     return clientRoleId;
   }
 
+  async isUserAdmin(userId: number) {
+    return this.prismaService.role
+      .count({
+        where: {
+          name: 'ADMIN',
+          userRoles: { some: { userId } },
+        },
+      })
+      .then((count) => count > 0);
+  }
+
   async getListRoleByUserId(
     userId: number,
     pageable: PaginationDTOQuery,
@@ -30,24 +41,20 @@ export class RoleRepository {
     const { page, size } = pageable;
     const skip = (page - 1) * size;
     const take = size;
+    const isAdmin = await this.isUserAdmin(userId);
+    const baseWhere: any = { deletedAt: null };
 
+    if (!isAdmin) {
+      baseWhere.userRoles = { some: { userId } };
+    }
     const [items, totalItems] = await this.prismaService.$transaction([
       this.prismaService.role.findMany({
-        where: {
-          deletedAt: null,
-          userRoles: {
-            some: { userId },
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-        },
+        where: baseWhere,
+        select: { id: true, name: true },
         skip,
         take,
-        orderBy: { id: 'asc' }, // ổn định kết quả phân trang
+        orderBy: { id: 'asc' },
       }),
-
       this.prismaService.role.count({
         where: {
           deletedAt: null,
@@ -75,12 +82,21 @@ export class RoleRepository {
       data: {
         name: dto.name,
         description: dto.description,
-        Permission: {
-          connect: permissionIds.map((id) => ({ id })),
+        permissions: {
+          create: permissionIds.map((id) => ({
+            permissionId: id,
+          })),
         },
         User_Role_createdByIdToUser: {
           connect: { id: userId },
         },
+      },
+      omit: {
+        isActive: true,
+        createdById: true,
+        updatedById: true,
+        deletedAt: true,
+        updatedAt: true,
       },
     });
   }
@@ -95,29 +111,65 @@ export class RoleRepository {
     });
   }
   async updateRole(userId: number, dto: RoleUpdateBodyDTO) {
-    const data: any = {
+    const updateData: any = {
       updatedById: userId,
     };
 
-    if (dto.name !== undefined && dto.name !== null) {
-      data.name = dto.name;
-    }
-    if (dto.isActive !== undefined && dto.isActive !== null) {
-      data.isActive = dto.isActive;
-    }
-    if (dto.description !== undefined && dto.description !== null) {
-      data.description = dto.description;
-    }
+    if (dto.name !== undefined) updateData.name = dto.name;
+    if (dto.isActive !== undefined) updateData.isActive = dto.isActive;
+    if (dto.description !== undefined) updateData.description = dto.description;
 
-    if (dto.permissionIds !== undefined && dto.permissionIds !== null) {
-      data.Permission = {
-        set: dto.permissionIds.map((id) => ({ id })),
-      };
-    }
+    return this.prismaService.$transaction(async (tx) => {
+      // 1. Update role basic fields
+      const updatedRole = await tx.role.update({
+        where: { id: dto.id },
+        data: updateData,
+      });
 
-    return this.prismaService.role.update({
-      where: { id: dto.id },
-      data,
+      // 2. Add permissions
+      if (dto.addPermissionIds?.length) {
+        await tx.rolePermission.createMany({
+          data: dto.addPermissionIds.map((pid) => ({
+            roleId: dto.id,
+            permissionId: pid,
+          })),
+          skipDuplicates: true,
+        });
+      }
+
+      // 3. Remove permissions
+      if (dto.removePermissionIds?.length) {
+        await tx.rolePermission.deleteMany({
+          where: {
+            roleId: dto.id,
+            permissionId: { in: dto.removePermissionIds },
+          },
+        });
+      }
+
+      // 4. Return updated + full permission list
+      return tx.role.findUnique({
+        where: { id: dto.id },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+          permissions: {
+            select: {
+              permission: {
+                select: {
+                  id: true,
+                  name: true,
+                  module: true,
+                },
+              },
+            },
+          },
+        },
+      });
     });
   }
 
@@ -134,6 +186,5 @@ export class RoleRepository {
         deletedAt: new Date(),
       },
     });
-    
   }
 }

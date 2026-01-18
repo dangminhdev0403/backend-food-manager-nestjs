@@ -10,6 +10,7 @@ export function isUniqueConstraintError(error: any): error is Prisma.PrismaClien
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
 }
 export function isPublicRoute(path: string): boolean {
+  whitelist.push(/^\/auth\/.*/);
   return whitelist.some((rule) => {
     if (typeof rule === 'string') return rule === path;
     if (rule instanceof RegExp) return rule.test(path);
@@ -77,4 +78,18 @@ export function normalizePermissions(routes: RouteMeta[]) {
       path: r.fullPath, // /roles/:id
       module: r.tags?.[0].toLocaleLowerCase() ?? null, // lấy tag đầu tiên làm module
     }));
+}
+
+export function groupByMoudle(list: Array<any>) {
+  const grouped = list.reduce(
+    (acc, item) => {
+      const key = item.module.toUpperCase();
+      if (!acc[key]) acc[key] = [];
+      acc[key].push({ id: item.id, name: item.name });
+      return acc;
+    },
+    {} as Record<string, any[]>,
+  );
+
+  return grouped;
 }

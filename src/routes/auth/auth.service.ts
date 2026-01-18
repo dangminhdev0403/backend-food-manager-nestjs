@@ -28,21 +28,6 @@ export class AuthService {
 
   async registerUser(body: RegisterBodyType): Promise<Omit<RegisterBodyType, 'password' | 'roleId'>> {
     try {
-      const verificationCode = await this.authRepository.findUniqueVerificationCode({
-        email: body.email,
-        code: body.code,
-        type: 'REGISTER',
-      });
-
-      if (!verificationCode) {
-        throw new UnprocessableEntityException([
-          {
-            message: 'Mã OTP không hợp lệ hoặc đã hết hạn',
-            path: 'code',
-          },
-        ]);
-      }
-
       const hashedPassword = await this.hashingService.hash(body.password);
 
       const roleId = await this.RoleService.getClientRoleId();
@@ -68,6 +53,24 @@ export class AuthService {
       throw error;
     }
   }
+
+  async verifyUser(body: RegisterBodyType) {
+    const verificationCode = await this.authRepository.findUniqueVerificationCode({
+      email: body.email,
+      code: body.code,
+      type: 'REGISTER',
+    });
+
+    if (!verificationCode) {
+      throw new UnprocessableEntityException([
+        {
+          error: 'Mã OTP không hợp lệ',
+          message: 'Mã OTP không hợp lệ hoặc đã hết hạn',
+          path: 'code',
+        },
+      ]);
+    }
+  }
   async sendOTP(body: SendOTPBodyType) {
     const user = await this.sharedUserRespo.findUnique({ email: body.email });
     if (!user) {
@@ -83,7 +86,7 @@ export class AuthService {
       email: body.email,
       type: body.type,
       code: createdOTP,
-      expiresAt: addMilliseconds(new Date(), parseInt(ms(envConfig.OTP_EXPIRES_IN))), // 5 minutes from now
+      expiresAt: addMilliseconds(new Date(), Number.parseInt(ms(envConfig.OTP_EXPIRES_IN))), // 5 minutes from now
     });
     return verificationCode;
   }
@@ -137,11 +140,13 @@ export class AuthService {
           id: loginUser.id,
         },
       },
+
       device: {
         connect: {
           id: device.id,
         },
       },
+
       expiresAt: new Date(refreshTokenDecoded.exp * 1000),
     });
 
@@ -160,10 +165,7 @@ export class AuthService {
   async validateUserJWTRefreshDecoded(userId: number, refreshToken: string, meta: { userAgent: string; ip: string }) {
     const refreshTokenDb = await this.authRepository.findUniqueRefreshToken({ token: refreshToken });
     if (!refreshTokenDb) throw new UnauthorizedException('Refresh token đã sử dụng');
-    const {
-      deviceId,
-      User: { userRoles },
-    } = refreshTokenDb;
+    const { deviceId } = refreshTokenDb;
     const $deleteRefreshToken = this.authRepository.deleteRefreshToken({ token: refreshToken });
     const $token = this.generateTokens({
       deviceId,
