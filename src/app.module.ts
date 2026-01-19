@@ -10,7 +10,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './routes/auth/auth.controller';
 import { AuthModule } from './routes/auth/auth.module';
+import { ProfileModule } from './routes/profile/profile.module';
 import { RoleModule } from './routes/roles/role.module';
+import { UserModule } from './routes/users/user.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { RoleModule } from './routes/roles/role.module';
     AuthModule,
     DiscoveryModule,
     PermissionModule,
+    UserModule,
+    ProfileModule,
   ],
   controllers: [AuthController, AppController],
   providers: [

@@ -10,6 +10,7 @@ import { LoginResDTO, LogoutBodyDTO, RegisterBodyDTO, RegisterResDTO, SendOTPBod
 import { AuthService } from 'src/routes/auth/auth.service';
 import { JwtRefreshGuard } from 'src/routes/auth/passport/guard/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/routes/auth/passport/guard/local-auth.guard';
+import { UserInRequest } from 'src/shared/constants/auth.constant';
 import { SuccessMessage } from 'src/shared/decorators/success-message.decorator';
 import { UserAgent } from 'src/shared/decorators/user-agent.decoreator';
 
@@ -21,29 +22,25 @@ export class AuthController {
   @Post('register')
   @SuccessMessage('Đăng kí thành công')
   @ApiOperation({ summary: 'User register' })
- 
   @ZodSerializerDto(RegisterResDTO)
   async registerUser(@Body() body: RegisterBodyDTO) {
     return await this.authService.registerUser(body);
   }
   @Post('otp')
   @SuccessMessage('gửi mã OTP thành công')
-      @ApiOperation({ summary: 'User send OTP' })
-   @HttpCode(200) 
+  @ApiOperation({ summary: 'User send OTP' })
+  @HttpCode(200)
   async sendOTP(@Body() body: SendOTPBodyDTO) {
     return await this.authService.sendOTP(body);
   }
   @Post('login')
   @SuccessMessage('Đăng nhập thành công')
-   @ApiOperation({ summary: 'User login' })
+  @ApiOperation({ summary: 'User login' })
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @ZodSerializerDto(LoginResDTO)
-  async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req) {
-    return await this.authService.login(req.user.email, {
-      userAgent,
-      ip,
-    });
+  async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req: UserInRequest) {
+    return await this.authService.login(req.user.email, { userAgent, ip });
   }
 
   @Post('refresh-token')

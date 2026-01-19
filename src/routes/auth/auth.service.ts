@@ -106,7 +106,6 @@ export class AuthService {
     if (!isPassMatch) {
       throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
-    console.log('service here', typeof loginUser);
 
     const parsed = UserResponseSchema.safeParse(loginUser);
 
@@ -131,6 +130,7 @@ export class AuthService {
     const tokens = await this.generateTokens({
       userId: loginUser.id,
       deviceId: loginUser.id,
+      passwordChangedAt: loginUser.passwordChangedAt,
     });
     const refreshTokenDecoded = await this.tokenService.verifyRefreshToken(tokens.refreshToken);
     await this.authRepository.createRefreshToken({
@@ -160,9 +160,44 @@ export class AuthService {
 
       throw new UnauthorizedException('User schema invalid');
     }
+
     return passed.data;
   }
-  async validateUserJWTRefreshDecoded(userId: number, refreshToken: string, meta: { userAgent: string; ip: string }) {
+
+  async validateRefreshTokenIat(refreshToken: string, accessToken: string) {
+    const [decodedAccessToken, decodedRefreshToken] = await Promise.all([
+      this.tokenService.verifyAccessToken(accessToken),
+      this.tokenService.verifyRefreshToken(refreshToken),
+    ]);
+
+    const THRESHOLD = 7 * 3600 * 1000; // 7 hours
+
+    const pwdChangedMs = decodedAccessToken.passwordChangedAt
+      ? new Date(decodedAccessToken.passwordChangedAt).getTime()
+      : 0;
+
+    const tokenIssuedMs = decodedRefreshToken.iat * 1000;
+
+    const isInvalid = pwdChangedMs > tokenIssuedMs + THRESHOLD;
+
+    this.logger.debug({
+      pwdChangedMs,
+      tokenIssuedMs,
+      isInvalid,
+    });
+
+    if (isInvalid) {
+      throw new UnauthorizedException('Refresh token bị vô hiệu do mật khẩu thay đổi');
+    }
+  }
+
+  async validateUserJWTRefreshDecoded(
+    userId: number,
+    refreshToken: string,
+    accessToken: string,
+    meta: { userAgent: string; ip: string },
+  ) {
+    await this.validateRefreshTokenIat(refreshToken, accessToken);
     const refreshTokenDb = await this.authRepository.findUniqueRefreshToken({ token: refreshToken });
     if (!refreshTokenDb) throw new UnauthorizedException('Refresh token đã sử dụng');
     const { deviceId } = refreshTokenDb;
@@ -170,9 +205,10 @@ export class AuthService {
     const $token = this.generateTokens({
       deviceId,
       userId,
+      passwordChangedAt: refreshTokenDb.User.passwordChangedAt,
     });
 
-    const [, , token] = await Promise.all([$deleteRefreshToken, $deleteRefreshToken, $token]);
+    const [_, token] = await Promise.all([$deleteRefreshToken, $token]);
     const refreshTokenDecoded = await this.tokenService.verifyRefreshToken(token.refreshToken);
 
     await this.authRepository.createRefreshToken({

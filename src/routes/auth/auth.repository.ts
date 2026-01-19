@@ -124,6 +124,7 @@ export class AuthRepository {
         id: true,
         email: true,
         password: true,
+        passwordChangedAt:true,
       },
     });
   }
@@ -137,6 +138,7 @@ export class AuthRepository {
           select: {
             id: true,
             userRoles: true,
+            passwordChangedAt:true,
           },
         },
         token: true,

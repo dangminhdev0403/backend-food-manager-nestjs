@@ -13,6 +13,7 @@ export const UserSchema = z.object({
   createdById: z.number().nullable(),
   updatedById: z.number().nullable(),
   deletedAt: z.date().nullable(),
+  passwordChangedAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

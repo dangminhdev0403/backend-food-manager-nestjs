@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AccessTokenDecoded) {
-    Logger.log(`JwtStrategy.validate jwt success: ${JSON.stringify(payload)}`);
+    Logger.log(`JwtStrategy.validate jwt success`);
     return await this.authService.validateUserJWTDecoded(payload.userId);
   }
 }

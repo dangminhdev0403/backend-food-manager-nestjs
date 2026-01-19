@@ -1,4 +1,4 @@
-import { Injectable, Ip, Logger } from '@nestjs/common';
+import { Injectable, Ip, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
@@ -29,7 +29,16 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
   }
 
   async validate(req: Request, payload: RefreshTokenDecoded, @Ip() ip, @UserAgent() userAgent: string) {
-    const refreshToken = req.body?.refreshToken ?? req.headers['authorization']?.replace('Bearer ', '');
-    return await this.authService.validateUserJWTRefreshDecoded(payload.userId, refreshToken, { userAgent, ip });
+    const refreshToken = req.body?.refreshToken;
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      throw new UnauthorizedException('Missing Authorization header');
+    }
+    const accessToken = authHeader.replace('Bearer ', '');
+
+    return await this.authService.validateUserJWTRefreshDecoded(payload.userId, refreshToken, accessToken, {
+      userAgent,
+      ip,
+    });
   }
 }

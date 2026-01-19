@@ -2,9 +2,11 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from 'src/shared/config/env.config';
+import { SharedTokenRepository } from 'src/shared/repositories/token.repository';
+import { PrismaService } from 'src/shared/services/prisma.service';
 import {
   AccessTokenDecoded,
   AccessTokenPayload,
@@ -14,7 +16,11 @@ import {
 
 @Injectable()
 export class TokenService {
-  constructor(private readonly jwtService: JwtService) {} // ✅ sửa tên
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly sharedTokenRepository: SharedTokenRepository,
+    private readonly prisma: PrismaService,
+  ) {} // ✅ sửa tên
 
   signAccessToken(payload: AccessTokenPayload) {
     return this.jwtService.signAsync(
@@ -62,5 +68,48 @@ export class TokenService {
       secret: envConfig.REFRESH_TOKEN_SECRET,
       algorithms: ['HS256'],
     });
+  }
+
+  async validateRefreshTokenOrThrow(refreshToken: string) {
+    const refreshTokenDb = await this.sharedTokenRepository.findUniqueRefreshToken({ token: refreshToken });
+
+    if (!refreshTokenDb) {
+      throw new UnauthorizedException('Refresh token không hợp lệ hoặc đã bị thu hồi');
+    }
+
+    return refreshTokenDb;
+  }
+
+  async rotateRefreshToken(
+    user: { userId: number; passwordChangedAt: Date | null },
+    refreshToken: string,
+    refreshTokenDb: any,
+  ) {
+    const { userId, passwordChangedAt } = user;
+    const { deviceId } = refreshTokenDb;
+
+    // 1) generate JWT mới
+    const newToken = await this.generateToken({ userId, deviceId, passwordChangedAt });
+
+    // 2) decode IAT để insert expiresAt chính xác
+    const decoded = await this.verifyRefreshToken(newToken.refreshToken);
+
+    // 3) Xóa token cũ + insert token mới trong cùng transaction
+    await this.prisma.$transaction(async (tx) => {
+      await tx.refreshToken.delete({
+        where: { token: refreshToken },
+      });
+
+      await tx.refreshToken.create({
+        data: {
+          token: newToken.refreshToken,
+          expiresAt: new Date(decoded.exp * 1000),
+          userId,
+          deviceId,
+        },
+      });
+    });
+
+    return newToken;
   }
 }
