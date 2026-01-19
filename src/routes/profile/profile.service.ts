@@ -72,8 +72,7 @@ export class ProfileService {
     //! Update mật khẩu + update RefreshToken
     // Transaction bảo vệ update + rotate token
     return await this.prisma.$transaction(async () => {
-      //! cột passwordChangedAt phải được cập nhật sau khi đổi pass
-      await this.userService.updateUser({ password: hashedNewPassword }, userId);
+      await this.userService.updatePassUser({ password: hashedNewPassword }, userId);
       const tokens = await this.tokenService.rotateRefreshToken(
         { userId, passwordVersion: passVersionDb + 1 },
         refreshToken,

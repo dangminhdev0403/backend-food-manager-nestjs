@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from 'generated/prisma/client';
 import { UserSelect, UserWhereUniqueInput } from 'generated/prisma/models';
 import { PrismaService } from 'src/shared/services/prisma.service';
@@ -21,12 +21,12 @@ export class UserRepository {
     });
   }
 
-  async updateUser(userId: number, data: Prisma.UserUpdateInput, select: UserSelect = defaultUserSafeSelect) {
-    Logger.log(`Data : ${JSON.stringify(data)}`);
+  async updatePassUser(userId: number, data: Prisma.UserUpdateInput, select: UserSelect = defaultUserSafeSelect) {
     return this.prismaService.user.update({
       where: { id: userId },
       data: { ...data, passwordVersions: { increment: 1 } },
       ...(select && { select }),
     });
   }
+  
 }

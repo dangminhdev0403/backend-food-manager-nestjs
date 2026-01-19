@@ -15,7 +15,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     const adapter = new PrismaPg({ connectionString });
 
     super({ adapter, log: ['query', 'info', 'warn', 'error'] });
+    
   }
+  
   async onModuleInit() {
     await this.$connect();
   }
@@ -23,4 +25,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   async onModuleDestroy() {
     await this.$disconnect();
   }
+
+  
 }

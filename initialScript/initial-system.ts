@@ -47,49 +47,43 @@ export async function initialPermission(prisma: PrismaService) {
 
   Logger.log(`Sync Permissions DONE → Added: ${toAdd.length}, Removed: ${toDelete.length}`);
 }
-
 export async function initialRole(prisma: PrismaService, hashingService: HashingService) {
   const roleCount = await prisma.role.count();
-  if (roleCount > 0) {
-    Logger.warn('Roles already exist in the database. Initialization aborted.');
-  } else {
-    Logger.log('====Creating Seed Data======');
 
-    const roles = await prisma.role.createMany({
+  if (roleCount === 0) {
+    Logger.log('====Creating Seed Roles=====');
+
+    await prisma.role.createMany({
       data: [
-        {
-          name: RoleName.Admin,
-          description: 'Administrator with full access',
-        },
-        {
-          name: RoleName.Client,
-          description: 'Client user with limited access',
-        },
-        {
-          name: RoleName.Seller,
-          description: 'Seller user with sales access',
-        },
+        { name: RoleName.Admin, description: 'Administrator with full access', isSystem: true },
+        { name: RoleName.Client, description: 'Client user with limited access', isSystem: true },
+        { name: RoleName.Seller, description: 'Seller user with sales access', isSystem: true },
       ],
     });
+  }
+
+  const adminExists = await prisma.user.findUnique({
+    where: { email: envConfig.ADMIN_EMAIL },
+  });
+
+  if (!adminExists) {
+    Logger.log('====Creating Admin User=====');
+
     const hasshedPass = await hashingService.hash(envConfig.ADMIN_PASSWORD);
     const adminRole = await prisma.role.findFirstOrThrow({
-      where: { name: RoleName.Admin, isSystem: true },
+      where: { name: RoleName.Admin },
     });
-    Logger.log('====Data Admin Role created======');
-    const adminUser = await prisma.user.create({
+
+    await prisma.user.create({
       data: {
         email: envConfig.ADMIN_EMAIL,
         password: hasshedPass,
         name: 'Admin User',
         phoneNumber: envConfig.ADMIN_PHONE,
-
         userRoles: {
-          create: {
-            roleId: adminRole.id,
-          },
+          create: { roleId: adminRole.id },
         },
       },
     });
-    Logger.log('====Data Admin User created======');
   }
 }

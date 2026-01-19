@@ -13,7 +13,7 @@ import { isUniqueConstraintError } from 'src/shared/helpers';
 import { SharedUserRepository } from 'src/shared/repositories/user.repository';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { TokenService } from 'src/shared/services/token.service';
-import { AccessTokenPayload } from 'src/shared/types/jwt.type';
+import { AccessTokenDecoded, AccessTokenPayload, RefreshTokenDecoded } from 'src/shared/types/jwt.type';
 
 @Injectable()
 export class AuthService {
@@ -152,8 +152,12 @@ export class AuthService {
 
     return tokens;
   }
-  async validateUserJWTDecoded(id: number) {
-    const passed = UserResponseSchema.safeParse(await this.authRepository.findUserByEmailOrId({ id }));
+  async validateUserJWTDecoded(accessTokenDecoded: AccessTokenDecoded) {
+    const userDb = await this.authRepository.findUserByEmailOrId({ id: accessTokenDecoded.userId });
+
+    if (accessTokenDecoded.ver !== userDb?.passwordVersions)
+      throw new UnauthorizedException('Token đã bị vô hiệu do mật khẩu thay đổi');
+    const passed = UserResponseSchema.safeParse(userDb);
 
     if (!passed.success) {
       this.logger.error(passed.error.format()); // để xem lỗi
@@ -164,7 +168,10 @@ export class AuthService {
     return passed.data;
   }
 
-  async validateRefreshTokenIat(refreshToken: string, accessToken: string) {
+  async validateRefreshTokenIat(
+    refreshToken: string,
+    accessToken: string,
+  ): Promise<[decodedAccessToken: AccessTokenDecoded, decodedRefreshToken: RefreshTokenDecoded]> {
     const [decodedAccessToken, decodedRefreshToken] = await Promise.all([
       this.tokenService.verifyAccessToken(accessToken),
       this.tokenService.verifyRefreshToken(refreshToken),
@@ -173,6 +180,7 @@ export class AuthService {
     if (decodedAccessToken.ver !== decodedRefreshToken.ver) {
       throw new UnauthorizedException('Refresh token đã bị vô hiệu do mật khẩu thay đổi');
     }
+    return [decodedAccessToken, decodedRefreshToken];
   }
 
   async validateUserJWTRefreshDecoded(
