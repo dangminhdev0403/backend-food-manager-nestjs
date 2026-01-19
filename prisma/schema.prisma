@@ -323,7 +323,7 @@ model User {
   deletedAt                                                 DateTime?
   createdAt                                                 DateTime              @default(now())
   updatedAt                                                 DateTime              @updatedAt
-  passwordChangedAt                                         DateTime?
+  passwordVersions                                          Int?                 @default(0)
   devices                                                   Device[]
   Brand_Brand_createdByIdToUser                             Brand[]               @relation("Brand_createdByIdToUser")
   Brand_Brand_updatedByIdToUser                             Brand[]               @relation("Brand_updatedByIdToUser")

@@ -42,24 +42,15 @@ export class ProfileService {
      *Phải Đúng 2 case trên mới tiếp tục , sai thì throw 403 hoặc 401
      */
     const [user, refreshTokenDb] = await Promise.all([
-      this.userService.findUserByIdOrThrow(userId, { password: true, passwordChangedAt: true }),
+      this.userService.findUserByIdOrThrow(userId, { password: true, passwordVersions: true }),
       this.tokenService.validateRefreshTokenOrThrow(refreshToken),
     ]);
     const decoded = this.tokenService.verifyRefreshToken(refreshToken);
 
-    // passwordChangedAt từ Prisma -> Date (UTC epoch nội tại)
-    const THRESHOLD = 7 * 3600 * 1000; // 7h
+    const passVersionDb = user.passwordVersions || 0;
+    const passVersionToken = (await decoded).ver || 0;
 
-    const pwdChangedMs = user.passwordChangedAt ? user.passwordChangedAt.getTime() : 0;
-
-    const tokenIssuedMs = new Date((await decoded).iat * 1000).getTime() + 5000; // convert from seconds to ms
-    const isInvalid = pwdChangedMs - tokenIssuedMs > THRESHOLD;
-    this.logger.debug({
-      pwdChangedMs,
-      tokenIssuedMs: tokenIssuedMs,
-      isInvalid,
-    });
-    if (isInvalid) {
+    if (passVersionDb !== passVersionToken) {
       throw new UnauthorizedException('Refresh token đã bị vô hiệu do mật khẩu thay đổi');
     }
 
@@ -76,13 +67,15 @@ export class ProfileService {
 
     //? Hash mật khẩu mới
     const hashedNewPassword = await this.hashingService.hash(newPassword);
+    console.log('updateUser data:', data);
+
     //! Update mật khẩu + update RefreshToken
     // Transaction bảo vệ update + rotate token
     return await this.prisma.$transaction(async () => {
       //! cột passwordChangedAt phải được cập nhật sau khi đổi pass
       await this.userService.updateUser({ password: hashedNewPassword }, userId);
       const tokens = await this.tokenService.rotateRefreshToken(
-        { userId, passwordChangedAt: user.passwordChangedAt },
+        { userId, passwordVersion: passVersionDb + 1 },
         refreshToken,
         refreshTokenDb,
       );

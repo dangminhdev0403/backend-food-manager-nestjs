@@ -130,7 +130,7 @@ export class AuthService {
     const tokens = await this.generateTokens({
       userId: loginUser.id,
       deviceId: loginUser.id,
-      passwordChangedAt: loginUser.passwordChangedAt,
+      ver: loginUser.passwordVersions || 0,
     });
     const refreshTokenDecoded = await this.tokenService.verifyRefreshToken(tokens.refreshToken);
     await this.authRepository.createRefreshToken({
@@ -170,24 +170,8 @@ export class AuthService {
       this.tokenService.verifyRefreshToken(refreshToken),
     ]);
 
-    const THRESHOLD = 7 * 3600 * 1000; // 7 hours
-
-    const pwdChangedMs = decodedAccessToken.passwordChangedAt
-      ? new Date(decodedAccessToken.passwordChangedAt).getTime()
-      : 0;
-
-    const tokenIssuedMs = decodedRefreshToken.iat * 1000;
-
-    const isInvalid = pwdChangedMs > tokenIssuedMs + THRESHOLD;
-
-    this.logger.debug({
-      pwdChangedMs,
-      tokenIssuedMs,
-      isInvalid,
-    });
-
-    if (isInvalid) {
-      throw new UnauthorizedException('Refresh token bị vô hiệu do mật khẩu thay đổi');
+    if (decodedAccessToken.ver !== decodedRefreshToken.ver) {
+      throw new UnauthorizedException('Refresh token đã bị vô hiệu do mật khẩu thay đổi');
     }
   }
 
@@ -205,7 +189,7 @@ export class AuthService {
     const $token = this.generateTokens({
       deviceId,
       userId,
-      passwordChangedAt: refreshTokenDb.User.passwordChangedAt,
+      ver: refreshTokenDb.User.passwordVersions || 0,
     });
 
     const [_, token] = await Promise.all([$deleteRefreshToken, $token]);

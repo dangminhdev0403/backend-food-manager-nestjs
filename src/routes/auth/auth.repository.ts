@@ -96,9 +96,15 @@ export class AuthRepository {
   async findUniqueUserIncludeRole(where: { email: string } | { id: number }) {
     return this.prismaService.user.findUnique({
       where,
+
       include: {
         userRoles: {
           select: {
+            user: {
+              select: {
+                passwordVersions: true,
+              },
+            },
             role: {
               select: {
                 id: true,
@@ -124,7 +130,7 @@ export class AuthRepository {
         id: true,
         email: true,
         password: true,
-        passwordChangedAt:true,
+        passwordVersions: true,
       },
     });
   }
@@ -138,7 +144,7 @@ export class AuthRepository {
           select: {
             id: true,
             userRoles: true,
-            passwordChangedAt:true,
+            passwordVersions: true,
           },
         },
         token: true,

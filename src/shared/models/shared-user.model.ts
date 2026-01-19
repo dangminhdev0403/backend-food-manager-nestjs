@@ -13,9 +13,9 @@ export const UserSchema = z.object({
   createdById: z.number().nullable(),
   updatedById: z.number().nullable(),
   deletedAt: z.date().nullable(),
-  passwordChangedAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  passwordVersions: z.number().nullable(),
 });
 
 export type UserType = z.infer<typeof UserSchema>;

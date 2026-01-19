@@ -84,7 +84,7 @@ export const LoginBodySchema = UserSchema.pick({
 export const UserResponseSchema = UserSchema.pick({
   id: true,
   email: true,
-  passwordChangedAt: true,
+  passwordVersions:true
 });
 
 export const LoginResSchema = z.object({

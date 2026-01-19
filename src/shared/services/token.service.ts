@@ -48,7 +48,7 @@ export class TokenService {
   async generateToken(payload: AccessTokenPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.signAccessToken(payload),
-      this.signRefreshToken({ userId: payload.userId }),
+      this.signRefreshToken({ userId: payload.userId , ver: payload.ver }),
     ]);
 
     return {
@@ -81,15 +81,15 @@ export class TokenService {
   }
 
   async rotateRefreshToken(
-    user: { userId: number; passwordChangedAt: Date | null },
+    user: { userId: number; passwordVersion: number | null },
     refreshToken: string,
     refreshTokenDb: any,
   ) {
-    const { userId, passwordChangedAt } = user;
+    const { userId, passwordVersion } = user;
     const { deviceId } = refreshTokenDb;
 
     // 1) generate JWT mới
-    const newToken = await this.generateToken({ userId, deviceId, passwordChangedAt });
+    const newToken = await this.generateToken({ userId, deviceId, ver: passwordVersion || 0 });
 
     // 2) decode IAT để insert expiresAt chính xác
     const decoded = await this.verifyRefreshToken(newToken.refreshToken);

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from 'generated/prisma/client';
 import { UserSelect, UserUpdateInput } from 'generated/prisma/models';
 import { UserRepository } from 'src/routes/users/user.repository';
 
@@ -15,8 +16,8 @@ export class UserService {
     );
   }
 
-  async updateUser(data: UserUpdateInput, userId: number) {
-    return await this.userRepository.updateUser(data, userId);
+  async updateUser(data: Prisma.UserUpdateInput, userId: number) {
+    return await this.userRepository.updateUser(userId,data);
   }
 
   async findUserByIdOrThrow(userId: number, select?: UserSelect) {
