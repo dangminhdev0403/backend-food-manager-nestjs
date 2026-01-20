@@ -19,12 +19,13 @@ const ConfigSchema = z.object({
   REFRESH_TOKEN_SECRET: z.string(),
   REFRESH_TOKEN_EXPIRES_IN: z.string(),
   ADMIN_NAME: z.string(),
+  ADMIN_ID: z.string(),
   ADMIN_EMAIL: z.email(),
   ADMIN_PASSWORD: z.string(),
   ADMIN_PHONE: z.string(),
   OTP_EXPIRES_IN: z.coerce.number(),
   PORT: z.string(),
-  NODE_ENV: z.enum(["development","production"])
+  NODE_ENV: z.enum(['development', 'production']),
 });
 const parseResult = ConfigSchema.safeParse(process.env);
 if (!parseResult.success) {

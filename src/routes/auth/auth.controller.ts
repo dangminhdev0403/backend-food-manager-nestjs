@@ -10,7 +10,7 @@ import { LoginResDTO, LogoutBodyDTO, RegisterBodyDTO, RegisterResDTO, SendOTPBod
 import { AuthService } from 'src/routes/auth/auth.service';
 import { JwtRefreshGuard } from 'src/routes/auth/passport/guard/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/routes/auth/passport/guard/local-auth.guard';
-import { UserInRequest } from 'src/shared/constants/auth.constant';
+import { RequestLogined } from 'src/shared/constants/auth.constant';
 import { SuccessMessage } from 'src/shared/decorators/success-message.decorator';
 import { UserAgent } from 'src/shared/decorators/user-agent.decoreator';
 
@@ -39,7 +39,7 @@ export class AuthController {
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @ZodSerializerDto(LoginResDTO)
-  async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req: UserInRequest) {
+  async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req: RequestLogined) {
     return await this.authService.login(req.user.email, { userAgent, ip });
   }
 

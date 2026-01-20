@@ -7,7 +7,7 @@ import { RoleCreateBodyDTO, RoleUpdateBodyDTO } from 'src/routes/roles/role.dto'
 import { RoleRepository } from 'src/routes/roles/role.repository';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { handleRecordNotFoundError, handleUniqueConstraintError } from 'src/shared/errors/primsa.error';
-import { groupByMoudle } from 'src/shared/helpers';
+import { groupByModule } from 'src/shared/helpers';
 
 @Injectable()
 export class RoleService {
@@ -28,8 +28,8 @@ export class RoleService {
     }
   }
 
-  async getListRole(userId: number, pagable: PaginationDTOQuery) {
-    return await this.roleRepository.getListRoleByUserId(userId, pagable);
+  async getListRole(userId: number, roleIds: number[], pagable: PaginationDTOQuery) {
+    return await this.roleRepository.getListRoleByUserId(userId,roleIds, pagable);
   }
 
   async updateRole(userId: number, roleUpdate: RoleUpdateBodyDTO) {
@@ -46,18 +46,17 @@ export class RoleService {
         name: p.permission.name,
         module: p.permission.module,
       }));
-      const grouped = groupByMoudle(flattenedPermissions);
+      const grouped = groupByModule(flattenedPermissions);
 
-     return {
-       id: role.id,
-       name: role.name,
-       description: role.description,
-       isActive: role.isActive,
-       createdAt: role.createdAt,
-       updatedAt: role.updatedAt,
-       permissions: grouped,
-     };
-
+      return {
+        id: role.id,
+        name: role.name,
+        description: role.description,
+        isActive: role.isActive,
+        createdAt: role.createdAt,
+        updatedAt: role.updatedAt,
+        permissions: grouped,
+      };
     } catch (error) {
       handleUniqueConstraintError(error, `Tên quyền đã tồn tại`, `Quyền ${roleUpdate.name} đã tồn tại`);
       handleRecordNotFoundError(error, `Truyền sai permisonsId`, `Danh sách permisonsId chứa Id không tồn tại`);
@@ -83,8 +82,8 @@ export class RoleService {
       });
   }
 
-  async blockWithNotAdminRole(userId: number) {
-    const isAdmin = await this.roleRepository.isUserAdmin(userId);
+  async blockWithNotAdminRole( roleIds:number[]) {
+    const isAdmin = await this.roleRepository.isUserAdmin( roleIds);
     if (!isAdmin)
       throw new ForbiddenException({
         error: 'Không thể thao tác',

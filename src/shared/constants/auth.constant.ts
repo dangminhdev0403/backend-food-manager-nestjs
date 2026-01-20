@@ -1,10 +1,16 @@
+import { Request } from 'express';
+
+export interface RequestLogined extends Request {
+  user: UserInRequest;
+}
+
 export interface UserInRequest {
-  user: {
+  
     id: number;
     email: string;
     name: string;
-    passwordChangedAt: Date | null ;
-  };
+    roleIds:  number[];
+  
 }
 
 //! public route

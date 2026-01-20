@@ -55,15 +55,27 @@ export async function initialRole(prisma: PrismaService, hashingService: Hashing
 
     await prisma.role.createMany({
       data: [
-        { name: RoleName.Admin, description: 'Administrator with full access', isSystem: true },
+        {
+          id: Number.parseInt(envConfig.ADMIN_ID),
+          name: RoleName.Admin,
+          description: 'Administrator with full access',
+          isSystem: true,
+        },
         { name: RoleName.Client, description: 'Client user with limited access', isSystem: true },
         { name: RoleName.Seller, description: 'Seller user with sales access', isSystem: true },
       ],
     });
   }
 
-  const adminExists = await prisma.user.findUnique({
-    where: { email: envConfig.ADMIN_EMAIL },
+  const adminExists = await prisma.user.findFirst({
+    where: {
+      userRoles: {
+        some: {
+          roleId: Number.parseInt(envConfig.ADMIN_ID),
+        },
+      },
+    },
+    select: { id: true },
   });
 
   if (!adminExists) {

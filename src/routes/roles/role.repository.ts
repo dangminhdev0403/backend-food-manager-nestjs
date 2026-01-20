@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleGetPayload } from 'generated/prisma/models';
 import { RoleCreateBodyDTO, RoleUpdateBodyDTO } from 'src/routes/roles/role.dto';
+import { envConfig } from 'src/shared/config/env.config';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { PageResponse } from 'src/shared/constants/response.constant';
 import { RoleName } from 'src/shared/constants/role.constant';
@@ -23,25 +24,19 @@ export class RoleRepository {
     return clientRoleId;
   }
 
-  async isUserAdmin(userId: number) {
-    return this.prismaService.role
-      .count({
-        where: {
-          name: 'ADMIN',
-          userRoles: { some: { userId } },
-        },
-      })
-      .then((count) => count > 0);
+   isUserAdmin(roleIds: number[]) {
+    return roleIds.includes(Number.parseInt(envConfig.ADMIN_ID));
   }
 
   async getListRoleByUserId(
     userId: number,
+   roleIds: number[],
     pageable: PaginationDTOQuery,
   ): Promise<PageResponse<RoleGetPayload<{ select: { id: true; name: true } }>>> {
     const { page, size } = pageable;
     const skip = (page - 1) * size;
     const take = size;
-    const isAdmin = await this.isUserAdmin(userId);
+    const isAdmin =  this.isUserAdmin(roleIds);
     const baseWhere: any = { deletedAt: null };
 
     if (!isAdmin) {

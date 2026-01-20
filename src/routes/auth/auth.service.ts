@@ -154,10 +154,17 @@ export class AuthService {
   }
   async validateUserJWTDecoded(accessTokenDecoded: AccessTokenDecoded) {
     const userDb = await this.authRepository.findUserByEmailOrId({ id: accessTokenDecoded.userId });
+    if (!userDb) throw new UnauthorizedException('User không tồn tại');
+    const userResponse = {
+      id: userDb.id,
+      email: userDb.email,
+      passwordVersions: userDb.passwordVersions,
+      roleIds: userDb.userRoles?.map((r) => r.roleId),
+    };
 
     if (accessTokenDecoded.ver !== userDb?.passwordVersions)
       throw new UnauthorizedException('Token đã bị vô hiệu do mật khẩu thay đổi');
-    const passed = UserResponseSchema.safeParse(userDb);
+    const passed = UserResponseSchema.safeParse(userResponse);
 
     if (!passed.success) {
       this.logger.error(passed.error.format()); // để xem lỗi

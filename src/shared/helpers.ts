@@ -87,7 +87,7 @@ export function normalizePermissions(routes: RouteMeta[]) {
     }));
 }
 
-export function groupByMoudle(list: Array<any>) {
+export function groupByModule(list: Array<any>) {
   const grouped = list.reduce(
     (acc, item) => {
       const key = item.module.toUpperCase();

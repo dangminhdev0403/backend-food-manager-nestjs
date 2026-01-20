@@ -131,6 +131,11 @@ export class AuthRepository {
         email: true,
         password: true,
         passwordVersions: true,
+        userRoles: {
+          select: {
+            roleId: true,
+          },
+        },
       },
     });
   }
