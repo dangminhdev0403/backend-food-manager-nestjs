@@ -23,7 +23,7 @@ import { RoleService } from 'src/routes/roles/role.service';
 import { RequestLogined } from 'src/shared/constants/auth.constant';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
-@ApiTags('Roles')
+@ApiTags('Vai trò')
 @Controller('roles')
 @UseGuards(AuthorizationGuard)
 export class RoleController {
@@ -33,31 +33,49 @@ export class RoleController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Role:Create' })
+  @ApiOperation({
+    summary: 'Tạo vai trò',
+    description: 'Tạo mới một vai trò trong hệ thống ',
+  })
   async createRole(@Body() roleInput: RoleCreateBodyDTO, @Request() req: RequestLogined) {
-    return await this.roleService.createRole(roleInput, req.user.id);
+    return this.roleService.createRole(roleInput, req.user.id);
   }
+
   @Get()
   @HttpCode(200)
-  @ApiOperation({ summary: 'Role:Get List' })
+  @ApiOperation({
+    summary: 'Danh sách vai trò',
+    description: 'Lấy danh sách vai trò ',
+  })
   async getRole(@Request() req: RequestLogined, @Query() query: PaginationDTOQuery) {
-    return await this.roleService.getListRole(req.user.id, req.user.roleIds, query);
+    return this.roleService.getListRole(req.user.id, req.user.roleIds, query);
   }
 
   @Get(':roleId/permissions')
-  @ApiOperation({ summary: 'Role:Get Permisions' })
+  @ApiOperation({
+    summary: 'Danh sách quyền của vai trò',
+    description: 'Lấy danh sách quyền theo vai trò cụ thể',
+  })
   async getPermissionByRoleId(@Request() req: RequestLogined, @Param('roleId', ParseIntPipe) roleId: number) {
-    return await this.permissionService.getPermissionByRoleId(roleId, req.user.roleIds);
+    return this.permissionService.getPermissionByRoleId(roleId, req.user.roleIds);
   }
+
   @Put()
   @HttpCode(200)
-  @ApiOperation({ summary: 'Role:Update' })
+  @ApiOperation({
+    summary: 'Cập nhật vai trò',
+    description: 'Cập nhật thông tin vai trò ',
+  })
   async updateRole(@Request() req: RequestLogined, @Body() data: RoleUpdateBodyDTO) {
-    return await this.roleService.updateRole(req.user.id, data);
+    return this.roleService.updateRole(req.user.id, data);
   }
+
   @Delete()
-  @ApiOperation({ summary: 'Role:Delete' })
+  @ApiOperation({
+    summary: 'Xoá vai trò',
+    description: 'Xoá vai trò khỏi hệ thống (soft delete nếu hỗ trợ)',
+  })
   async deleteRole(@Request() req: RequestLogined, @Body() data: RoleUpdateBodyDTO) {
-    return await this.roleService.deleteRole(req.user.id, data);
+    return this.roleService.deleteRole(req.user.id, data);
   }
 }

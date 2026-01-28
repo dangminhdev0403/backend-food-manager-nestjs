@@ -30,20 +30,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       case exception instanceof ZodValidationException: {
         status = HttpStatus.BAD_REQUEST;
         const zodError = exception.getZodError() as ZodError;
-        if (!zodError) {
-          message = 'Invalid request data';
-          break;
-        }
+
         const errors = zodError.issues.map((issue) => ({
-          path: issue.path.join('.'),
+          field: issue.path.join('.') || 'body',
           message: issue.message,
         }));
 
-        Logger.error(`❌ Zod validation error`, JSON.stringify(errors), 'ZodValidationException');
-
         return response.status(status).json({
           status,
-          error: 'Validation error',
+          error: 'Dữ liệu không hợp lệ',
           message: errors,
           data: null,
         });

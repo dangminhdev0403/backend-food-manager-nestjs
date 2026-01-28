@@ -11,7 +11,7 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Permissions:Get List' })
+  @ApiOperation({ summary: 'Lấy danh sách quyền' , description: 'Lấy danh sách quyền có phân trang' })
   async getAllPermission(@Request() req: RequestLogined) {
     return await this.permissionService.getListPermission(req.user.roleIds);
   }

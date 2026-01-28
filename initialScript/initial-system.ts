@@ -32,6 +32,7 @@ export async function initialPermission(prisma: PrismaService) {
       path: p.path,
       method: p.method as HTTPMethod,
       module: p.module,
+      description:p.description
     }));
   // ---- EXECUTE DB MUTATIONS ----
 

@@ -82,8 +82,8 @@ export class RoleService {
       });
   }
 
-  async blockWithNotAdminRole( roleIds:number[]) {
-    const isAdmin = await this.roleRepository.isUserAdmin( roleIds);
+   blockWithNotAdminRole( roleIds:number[]) {
+    const isAdmin =  this.roleRepository.isUserAdmin( roleIds);
     if (!isAdmin)
       throw new ForbiddenException({
         error: 'Không thể thao tác',

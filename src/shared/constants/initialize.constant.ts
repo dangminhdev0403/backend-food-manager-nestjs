@@ -20,4 +20,5 @@ export interface RouteMeta {
   routePath: string | null;
   fullPath: string;
   summary: string;
+  description: string;
 }

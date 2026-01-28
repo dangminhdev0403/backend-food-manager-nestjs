@@ -5,22 +5,21 @@ export interface RequestLogined extends Request {
 }
 
 export interface UserInRequest {
-  
-    id: number;
-    email: string;
-    name: string;
-    roleIds:  number[];
-  
+  id: number;
+  email: string;
+  name: string;
+  roleIds: number[];
 }
 
 //! public route
 export const whitelist = [
   //! route động  /products/**
-  /^\/products\/.*/,
+  
   /^\/order-result\/.*/,
   /^\/api\/.*/,
+  /^\/media\/.*/,
   //! route cứng /products
-  '/products',
+  
   '/chat',
   '/',
   /^\/auth\/((?!logout|refresh).*)$/,

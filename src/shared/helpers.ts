@@ -70,6 +70,7 @@ export function collectRoutesMetadata(app) {
         routePath,
         fullPath,
         summary: operationMeta.summary,
+        description: operationMeta.description,
       });
     }
   }
@@ -82,6 +83,7 @@ export function normalizePermissions(routes: RouteMeta[]) {
     .map((r) => ({
       name: r.summary, // Summary = permission name
       method: r.httpMethod, // GET / POST / PUT / DELETE
+      description: r.description,
       path: r.fullPath, // /roles/:id
       module: r.tags?.[0].toLocaleLowerCase() ?? null, // lấy tag đầu tiên làm module
     }));

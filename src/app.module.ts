@@ -1,3 +1,4 @@
+import { MediaModule } from './routes/media/media.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE, DiscoveryModule, Reflector } from '@nestjs/core';
@@ -13,6 +14,7 @@ import { AuthModule } from './routes/auth/auth.module';
 import { ProfileModule } from './routes/profile/profile.module';
 import { RoleModule } from './routes/roles/role.module';
 import { UserModule } from './routes/users/user.module';
+import { ProductModule } from 'src/routes/products/product.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { UserModule } from './routes/users/user.module';
     PermissionModule,
     UserModule,
     ProfileModule,
+    MediaModule,
+    ProductModule,
   ],
   controllers: [AuthController, AppController],
   providers: [

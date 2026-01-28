@@ -21,6 +21,7 @@ export class AuthorizationGuard implements CanActivate {
 
     const req = ctx.switchToHttp().getRequest<RequestLogined>();
     const user = req.user;
+    this.logger.debug('User found: ', user);
 
     if (!user) {
       throw new ForbiddenException('Unauthenticated');
@@ -34,7 +35,6 @@ export class AuthorizationGuard implements CanActivate {
     if (!path) {
       throw new InternalServerErrorException('Route path not resolved');
     }
-    
 
     const allowed = await this.permissionService.hasPermission(roleIds, path, method);
 
