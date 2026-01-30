@@ -2,27 +2,15 @@ import 'reflect-metadata';
 
 import { DiscoveryService } from '@nestjs/core';
 import { Prisma } from 'generated/prisma/client';
-import { routeIgnore, whitelist } from 'src/shared/constants/auth.constant';
+import { ignoreMatcher, publicMatcher } from 'src/shared/config/routes.config';
 import { METHOD_MAP, RouteMeta } from 'src/shared/constants/initialize.constant';
 
 // Predicate to check for unique constraint errors , web check code error : https://www.prisma.io/docs/orm/reference/error-reference
 export function isUniqueConstraintError(error: any): error is Prisma.PrismaClientKnownRequestError {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
 }
-export function isPublicRoute(path: string, isInit: boolean = false): boolean {
-  if (isInit) {
-    return routeIgnore.some((rule) => {
-      if (typeof rule === 'string') return rule === path;
-      if (rule instanceof RegExp) return rule.test(path);
-      return false;
-    });
-  }
-
-  return whitelist.some((rule) => {
-    if (typeof rule === 'string') return rule === path;
-    if (rule instanceof RegExp) return rule.test(path);
-    return false;
-  });
+export function isPublicRoute(path: string): boolean {
+  return  ignoreMatcher.isPublic(path) ;
 }
 
 export function collectRoutesMetadata(app) {
@@ -79,7 +67,7 @@ export function collectRoutesMetadata(app) {
 }
 export function normalizePermissions(routes: RouteMeta[]) {
   return routes
-    .filter((r) => !isPublicRoute(r.fullPath, true)) // BỎ QUA PUBLIC ROUTE
+    .filter((r) => !isPublicRoute(r.fullPath)) // BỎ QUA PUBLIC ROUTE
     .map((r) => ({
       name: r.summary, // Summary = permission name
       method: r.httpMethod, // GET / POST / PUT / DELETE

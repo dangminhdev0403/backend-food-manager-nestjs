@@ -2,7 +2,7 @@ import { ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { whitelist } from 'src/shared/constants/auth.constant';
+import { publicMatcher } from 'src/shared/config/routes.config';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -16,16 +16,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request: Request = context.switchToHttp().getRequest<Request>();
     const path = request.path;
 
-    Logger.log(`Check public route:${path}`);
-    const isWhitelisted = whitelist.some((route) => {
-      if (typeof route === 'string') return route === path;
-      if (route instanceof RegExp) return route.test(path);
-      return false;
-    });
-    if (isWhitelisted) {
-      Logger.log(`This route is public:${path}`);
+    if (publicMatcher.isPublic(path)) {
+      Logger.debug(`Public route: ${path}`);
       return true;
     }
+    Logger.debug(`Protected route: ${path}`);
+
     Logger.log(`This route is not public:${path}`);
     return super.canActivate(context);
   }
