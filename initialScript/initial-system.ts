@@ -5,7 +5,7 @@ import 'reflect-metadata';
 import { AppModule } from 'src/app.module';
 import { envConfig } from 'src/shared/config/env.config';
 import { RoleName } from 'src/shared/constants/role.constant';
-import { collectRoutesMetadata, normalizePermissions } from 'src/shared/helpers';
+import { collectRoutesMetadata, normalizePermissions } from 'src/shared/helpers/helpers';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
@@ -32,7 +32,7 @@ export async function initialPermission(prisma: PrismaService) {
       path: p.path,
       method: p.method as HTTPMethod,
       module: p.module,
-      description:p.description
+      description: p.description,
     }));
   // ---- EXECUTE DB MUTATIONS ----
 

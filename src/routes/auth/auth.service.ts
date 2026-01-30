@@ -9,11 +9,11 @@ import { RegisterBodyType, SendOTPBodyType, UserResponseSchema } from 'src/route
 import { AuthRepository } from 'src/routes/auth/auth.repository';
 import { RoleService } from 'src/routes/roles/role.service';
 import { envConfig, generateOTP } from 'src/shared/config/env.config';
-import { isUniqueConstraintError } from 'src/shared/helpers';
+import { AccessTokenDecoded, AccessTokenPayload, RefreshTokenDecoded } from 'src/shared/constants/jwt.type';
+import { isUniqueConstraintError } from 'src/shared/helpers/helpers';
 import { SharedUserRepository } from 'src/shared/repositories/user.repository';
 import { HashingService } from 'src/shared/services/hashing.service';
 import { TokenService } from 'src/shared/services/token.service';
-import { AccessTokenDecoded, AccessTokenPayload, RefreshTokenDecoded } from 'src/shared/types/jwt.type';
 
 @Injectable()
 export class AuthService {

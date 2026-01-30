@@ -7,7 +7,7 @@ import { RoleCreateBodyDTO, RoleUpdateBodyDTO } from 'src/routes/roles/role.dto'
 import { RoleRepository } from 'src/routes/roles/role.repository';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { handleRecordNotFoundError, handleUniqueConstraintError } from 'src/shared/errors/primsa.error';
-import { groupByModule } from 'src/shared/helpers';
+import { groupByModule } from 'src/shared/helpers/helpers';
 
 @Injectable()
 export class RoleService {
@@ -29,7 +29,7 @@ export class RoleService {
   }
 
   async getListRole(userId: number, roleIds: number[], pagable: PaginationDTOQuery) {
-    return await this.roleRepository.getListRoleByUserId(userId,roleIds, pagable);
+    return await this.roleRepository.getListRoleByUserId(userId, roleIds, pagable);
   }
 
   async updateRole(userId: number, roleUpdate: RoleUpdateBodyDTO) {
@@ -82,8 +82,8 @@ export class RoleService {
       });
   }
 
-   blockWithNotAdminRole( roleIds:number[]) {
-    const isAdmin =  this.roleRepository.isUserAdmin( roleIds);
+  blockWithNotAdminRole(roleIds: number[]) {
+    const isAdmin = this.roleRepository.isUserAdmin(roleIds);
     if (!isAdmin)
       throw new ForbiddenException({
         error: 'Không thể thao tác',

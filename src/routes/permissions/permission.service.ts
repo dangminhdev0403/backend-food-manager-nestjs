@@ -7,7 +7,7 @@ import { HTTPMethod } from 'generated/prisma/enums';
 import { PermissionRepository } from 'src/routes/permissions/permission.repository';
 import { RoleService } from 'src/routes/roles/role.service';
 import { envConfig } from 'src/shared/config/env.config';
-import { groupByModule } from 'src/shared/helpers';
+import { groupByModule } from 'src/shared/helpers/helpers';
 
 @Injectable()
 export class PermissionService {
@@ -15,14 +15,14 @@ export class PermissionService {
     private readonly permissionRepository: PermissionRepository,
     private readonly roleService: RoleService,
   ) {}
-  async getListPermission( roleIds: number[]) {
+  async getListPermission(roleIds: number[]) {
     // await this.roleService.blockWithNotAdminRole( roleIds);
     const listPermissions = await this.permissionRepository.getListPermissionGroupedList();
     return groupByModule(listPermissions);
   }
 
-  async getPermissionByRoleId(roleId: number,  roleIds: number[]) {
-    await this.roleService.blockWithNotAdminRole( roleIds);
+  async getPermissionByRoleId(roleId: number, roleIds: number[]) {
+    await this.roleService.blockWithNotAdminRole(roleIds);
     const permission = await this.permissionRepository.getPermissionByRoleId(roleId);
     return groupByModule(permission);
   }

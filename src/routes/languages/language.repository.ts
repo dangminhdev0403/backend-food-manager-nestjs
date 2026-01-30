@@ -1,22 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from 'generated/prisma/client';
 import { LanguageCreateInput, LanguageUncheckedUpdateInput } from 'generated/prisma/models';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
+import { normalizePagination, prismaPaginate } from 'src/shared/helpers/pagination.helpers';
+
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class LanguageRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findAll() {
-    return this.prismaService.language.findMany({
-      where: {
-        deletedAt: null,
-      },
-      select: {
-        id: true,
-        name: true,
-        code: true,
-      },
-    });
+  async findAll(pageable: PaginationDTOQuery) {
+    const { page, size } = normalizePagination(pageable);
+
+    const args = {
+      where: { deletedAt: null },
+      select: { id: true, name: true, code: true },
+    } satisfies Prisma.LanguageFindManyArgs;
+
+    return prismaPaginate(this.prismaService.language, args, page, size);
   }
   async createOne(languageInput: LanguageCreateInput) {
     return this.prismaService.language.create({

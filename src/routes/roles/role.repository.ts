@@ -5,6 +5,8 @@ import { envConfig } from 'src/shared/config/env.config';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { PageResponse } from 'src/shared/constants/response.constant';
 import { RoleName } from 'src/shared/constants/role.constant';
+import { normalizePagination, prismaPaginate } from 'src/shared/helpers/pagination.helpers';
+
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
@@ -24,52 +26,36 @@ export class RoleRepository {
     return clientRoleId;
   }
 
-   isUserAdmin(roleIds: number[]) {
+  isUserAdmin(roleIds: number[]) {
     return roleIds.includes(Number.parseInt(envConfig.ADMIN_ID));
   }
 
   async getListRoleByUserId(
     userId: number,
-   roleIds: number[],
+    roleIds: number[],
     pageable: PaginationDTOQuery,
   ): Promise<PageResponse<RoleGetPayload<{ select: { id: true; name: true } }>>> {
-    const { page, size } = pageable;
-    const skip = (page - 1) * size;
-    const take = size;
-    const isAdmin =  this.isUserAdmin(roleIds);
-    const baseWhere: any = { deletedAt: null };
+    const { page, size } = normalizePagination(pageable);
+    const isAdmin = this.isUserAdmin(roleIds);
+
+    const where: any = { deletedAt: null };
 
     if (!isAdmin) {
-      baseWhere.userRoles = { some: { userId } };
+      where.userRoles = { some: { userId } };
     }
-    const [items, totalItems] = await this.prismaService.$transaction([
-      this.prismaService.role.findMany({
-        where: baseWhere,
-        select: { id: true, name: true },
-        skip,
-        take,
-        orderBy: { id: 'asc' },
-      }),
-      this.prismaService.role.count({
-        where: {
-          deletedAt: null,
-          userRoles: {
-            some: { userId },
-          },
-        },
-      }),
-    ]);
 
-    return {
-      items,
-      meta: {
-        page,
-        size,
-        totalItems,
-        totalPages: Math.ceil(totalItems / size),
+    return prismaPaginate(
+      this.prismaService.role,
+      {
+        where,
+        select: { id: true, name: true },
+        orderBy: { id: 'asc' },
       },
-    };
+      page,
+      size,
+    );
   }
+
   async createRole(dto: RoleCreateBodyDTO, userId: number) {
     const permissionIds = dto.permissionIds ?? [];
 

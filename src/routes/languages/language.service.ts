@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { LanguageCreateBodyDTO, LanguageDeleteBodyDTO, LanguageUpdateBodyDTO } from 'src/routes/languages/language.dto';
 import { LanguageRepository } from 'src/routes/languages/language.repository';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 
 @Injectable()
 export class LanguageService {
   constructor(private readonly languageRepository: LanguageRepository) {}
 
-  async findAll() {
-    return this.languageRepository.findAll();
+  async findAll(query: PaginationDTOQuery) {
+    return this.languageRepository.findAll(query);
   }
 
   async createOne(languageInput: LanguageCreateBodyDTO, userId: number) {

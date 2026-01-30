@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LanguageCreateBodyDTO, LanguageDeleteBodyDTO, LanguageUpdateBodyDTO } from 'src/routes/languages/language.dto';
 import { LanguageService } from 'src/routes/languages/language.service';
 import { RequestLogined } from 'src/shared/constants/auth.constant';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
 
 @Controller('admin/languages')
@@ -24,8 +25,8 @@ export class AdminLanguagesController {
     summary: 'Lấy danh sách ngôn ngữ',
     description: 'Lấy danh sách ngôn ngữ trong hệ thông ',
   })
-  async getListLanguage() {
-    return this.languageService.findAll();
+  async getListLanguage(@Query() query: PaginationDTOQuery) {
+    return this.languageService.findAll(query);
   }
   @Get('get-one/:id')
   @ApiOperation({

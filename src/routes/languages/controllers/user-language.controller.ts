@@ -1,6 +1,7 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LanguageService } from 'src/routes/languages/language.service';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 
 @Controller('languages')
 @ApiTags(' Ngôn ngữ ')
@@ -12,8 +13,8 @@ export class UserLanguagesController {
     summary: 'Lấy danh sách ngôn ngữ',
     description: 'Lấy danh sách ngôn ngữ trong hệ thông ',
   })
-  async getListLanguage() {
-    return this.languageService.findAll();
+  async getListLanguage( @Query() query: PaginationDTOQuery) {
+    return this.languageService.findAll(query);
   }
   @Get('get-one/:id')
   @ApiOperation({

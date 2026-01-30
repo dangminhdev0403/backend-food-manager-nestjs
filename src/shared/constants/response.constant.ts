@@ -4,10 +4,12 @@ export interface PageMeta {
   totalItems: number;
   totalPages: number;
 }
+
 export interface PageResponse<T> {
   items: T[];
   meta: PageMeta;
 }
+
 
 export class ResponseData<T> {
   status: number;

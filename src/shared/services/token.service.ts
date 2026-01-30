@@ -5,14 +5,14 @@ https://docs.nestjs.com/providers#services
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from 'src/shared/config/env.config';
-import { SharedTokenRepository } from 'src/shared/repositories/token.repository';
-import { PrismaService } from 'src/shared/services/prisma.service';
 import {
   AccessTokenDecoded,
   AccessTokenPayload,
   RefreshTokenDecoded,
   RefreshTokenPayload,
-} from 'src/shared/types/jwt.type';
+} from 'src/shared/constants/jwt.type';
+import { SharedTokenRepository } from 'src/shared/repositories/token.repository';
+import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class TokenService {
@@ -48,7 +48,7 @@ export class TokenService {
   async generateToken(payload: AccessTokenPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.signAccessToken(payload),
-      this.signRefreshToken({ userId: payload.userId , ver: payload.ver }),
+      this.signRefreshToken({ userId: payload.userId, ver: payload.ver }),
     ]);
 
     return {
