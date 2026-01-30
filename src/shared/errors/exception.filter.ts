@@ -79,13 +79,27 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         break;
       }
       case exception instanceof Prisma.PrismaClientKnownRequestError: {
+        //     cause: {
+        //   originalCode: '23505',
+        //   originalMessage: 'duplicate key value violates unique constraint "Language_code_key"',
+        //   kind: 'UniqueConstraintViolation',
+        //   constraint: {
+        //     fields: [
+        //       'code'
+        //     ]
+        //   }
+        // }
         switch (exception.code) {
-          case 'P2002':
+          case 'P2002': {
+            this.logger.error(exception);
+            const fields = getUniqueFields(exception);
+            message = `Duplicate value for field: ${fields?.join(', ')}`;
             return response.status(HttpStatus.CONFLICT).json({
               status: 409,
               error: 'Unique constraint violated',
-              message: exception,
+              message: message,
             });
+          }
 
           case 'P2003':
             return response.status(HttpStatus.BAD_REQUEST).json({
@@ -132,4 +146,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const responseData = new ResponseData(status, error ?? message, message, null);
     response.status(status).json(responseData);
   }
+}
+
+function getUniqueFields(exception: any): string[] {
+  return (
+    exception?.meta?.target ??
+    exception?.meta?.constraint?.fields ??
+    exception?.meta?.driverAdapterError?.cause?.constraint?.fields ??
+    exception?.cause?.constraint?.fields ??
+    []
+  );
 }

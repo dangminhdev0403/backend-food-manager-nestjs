@@ -2,8 +2,7 @@ import { ProductCreateInputObjectZodSchema } from 'generated/zod-validator/schem
 import z from 'zod';
 
 const ProductBaseSchema = ProductCreateInputObjectZodSchema.pick({
-  name: true,
-  description: true,
+
   basePrice: true,
   virtualPrice: true,
 });

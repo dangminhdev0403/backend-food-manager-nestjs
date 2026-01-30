@@ -13,8 +13,7 @@ export class ProductService {
     const productCreate: ProductCreateInput = {
       basePrice: product.basePrice,
       virtualPrice: product.virtualPrice,
-      name: product.name,
-      description: product.description,
+    
       owner: {
         connect: {
           id: ownerId,

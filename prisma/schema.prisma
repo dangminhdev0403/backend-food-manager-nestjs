@@ -24,9 +24,9 @@ model CartItem {
 }
 
 model Category {
-  id       Int  @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   parentId Int?
-
+ 
   // Tree relation
   parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
   children Category[] @relation("CategoryTree")
@@ -70,7 +70,7 @@ model Language {
   updatedById                     Int?
   deletedAt                       DateTime?
   createdAt                       DateTime              @default(now())
-  updatedAt                       DateTime
+  updatedAt                       DateTime              @updatedAt
   CategoryTranslation             CategoryTranslation[]
   User_Language_createdByIdToUser User?                 @relation("Language_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
   User_Language_updatedByIdToUser User?                 @relation("Language_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
@@ -143,9 +143,7 @@ model Product {
   virtualPrice        Float
   images              String[]
   cookingInstructions String   @default("") @db.VarChar(1000)
-  name                String
-  description         String
-  // Ownership (User có nhiều Product)
+
   ownerId             Int
   owner               User     @relation("UserProducts", fields: [ownerId], references: [id])
 

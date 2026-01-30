@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { HTTPMethod } from 'generated/prisma/enums';
-import { envConfig } from 'src/shared/config/env.config';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()

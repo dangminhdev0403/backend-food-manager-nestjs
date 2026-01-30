@@ -14,12 +14,13 @@ export interface UserInRequest {
 //! public route
 export const whitelist = [
   //! route động  /products/**
-  
+
   /^\/order-result\/.*/,
+  /^\/languages(\/.*)?$/,
   /^\/api\/.*/,
   /^\/media\/.*/,
   //! route cứng /products
-  
+
   '/chat',
   '/',
   /^\/auth\/((?!logout|refresh).*)$/,
