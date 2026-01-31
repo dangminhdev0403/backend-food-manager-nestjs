@@ -9,6 +9,7 @@ export class CategoryRepository {
   async findAll(code: string) {
     return this.prismaService.category.findMany({
       where: {
+        deletedAt: null,
         translations: {
           some: {
             Language: { code },
@@ -35,11 +36,20 @@ export class CategoryRepository {
     });
   }
 
-  async findOneForUpdate(id: number) {
+  async findOneForUpdate(id: number, code: string) {
     return this.prismaService.category.findUnique({
-      where: { id },
+      where: {
+        id,
+        deletedAt: null,
+        translations: {
+          some: {
+            Language: { code },
+          },
+        },
+      },
       select: {
         id: true,
+
         createdById: true,
         updatedById: true,
         createdAt: true,
@@ -90,6 +100,7 @@ export class CategoryRepository {
     Logger.debug(dto);
     return this.prismaService.category.update({
       where: {
+        deletedAt: null,
         id: dto.categoryId,
       },
       data: {
@@ -106,6 +117,30 @@ export class CategoryRepository {
             },
           })),
         },
+        updatedById: userId,
+      },
+    });
+  }
+
+  async softDelete(categoryId: number, userId: number) {
+    return this.prismaService.category.update({
+      where: {
+        deletedAt: null,
+        id: categoryId,
+      },
+      data: {
+        deletedAt: new Date(),
+        updatedById: userId,
+      },
+    });
+  }
+  async restoreCategory(categoryId: number, userId: number) {
+    return this.prismaService.category.update({
+      where: {
+        id: categoryId,
+      },
+      data: {
+        deletedAt: null,
         updatedById: userId,
       },
     });

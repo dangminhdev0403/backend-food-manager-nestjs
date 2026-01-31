@@ -6,8 +6,6 @@ import * as os from 'node:os';
 import { JwtAuthGuard } from 'src/routes/auth/passport/guard/jwt-auth.guard';
 import { envConfig } from 'src/shared/config/env.config';
 import { SwaggerConfig } from 'src/shared/config/swagger.config';
-import { GlobalExceptionFilter } from 'src/shared/errors/exception.filter';
-import { setupZodVietnamese } from 'src/shared/errors/zod.error';
 import { TransformationInterceptor } from 'src/shared/Interceptors/tramform.interceptor';
 import { AppModule } from './app.module';
 function getLocalIp(): string {
@@ -22,7 +20,6 @@ function getLocalIp(): string {
   return 'localhost';
 }
 async function bootstrap() {
-  setupZodVietnamese();
   const app = await NestFactory.create(AppModule);
 
   if (SwaggerConfig.enable(app)) {

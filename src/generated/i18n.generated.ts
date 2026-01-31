@@ -12,10 +12,11 @@ export type I18nTranslations = {
         "FORBIDDEN_ACTION": string;
         "TRANSLATION_NOT_FOUND": string;
     };
-    "exceptionHanlder": {
+    "exceptionHandler": {
         "NOT_FOUND": string;
         "UNAUTHORIZED": string;
         "FORBIDDEN": string;
+        "BAD_REQUEST": string;
         "VALIDATION_FAILED": string;
         "INVALID_ID": string;
         "INVALID_PAYLOAD": string;
@@ -29,6 +30,14 @@ export type I18nTranslations = {
         "DELETE_FAILED": string;
         "DATABASE_ERROR": string;
         "INTERNAL_SERVER_ERROR": string;
+    };
+    "prisma": {
+        "P2000": string;
+        "P2001": string;
+        "P2002": string;
+        "P2003": string;
+        "P2004": string;
+        "P2025": string;
     };
     "validation": {
         "INVALID_TYPE": string;

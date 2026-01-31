@@ -1,0 +1,8 @@
+{
+  "P2000": "The provided value is too long for the field.",
+  "P2001": "The requested record was not found.",
+  "P2002": "A record with the same value already exists.",
+  "P2003": "Foreign key constraint failed.",
+  "P2004": "A database constraint failed.",
+  "P2025": "The record you are trying to update or delete does not exist."
+}

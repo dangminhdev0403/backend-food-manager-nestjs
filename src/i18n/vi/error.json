@@ -1,7 +1,7 @@
 {
-  "NOT_FOUND": "{{resource}} was not found.",
-  "ALREADY_EXISTS": "{{resource}} already exists.",
-  "INVALID_FIELD": "Invalid value for field: {{field}}.",
-  "FORBIDDEN_ACTION": "You are not allowed to {{action}}.",
-  "TRANSLATION_NOT_FOUND": "Translation for language {{code}} was not found."
+  "NOT_FOUND": "Không tìm thấy {resource} .",
+  "ALREADY_EXISTS": "{resource} đã tồn tại.",
+  "INVALID_FIELD": "Giá trị không hợp lệ: {field}.",
+  "FORBIDDEN_ACTION": "Bạn không có quyền thực hiện {action}.",
+  "TRANSLATION_NOT_FOUND": "Không tìm thấy bản dịch cho ngôn ngữ {code}."
 }

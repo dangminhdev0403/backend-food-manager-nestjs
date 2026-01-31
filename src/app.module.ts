@@ -24,7 +24,7 @@ import { UserModule } from './routes/users/user.module';
 @Module({
   imports: [
     I18nModule.forRoot({
-      fallbackLanguage: 'en',
+      fallbackLanguage: 'vi',
       loaderOptions: {
         path: path.resolve('src/i18n/'),
         watch: true,

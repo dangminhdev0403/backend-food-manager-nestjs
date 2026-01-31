@@ -1,0 +1,24 @@
+{
+  "NOT_FOUND": "Không tìm thấy tài nguyên.",
+  "UNAUTHORIZED": "Chưa được xác thực.",
+  "FORBIDDEN": "Không có quyền thực hiện hành động này.",
+  "BAD_REQUEST": "Yêu cầu không hợp lệ.",
+
+  "VALIDATION_FAILED": "Dữ liệu không hợp lệ.",
+  "INVALID_ID": "Định danh không hợp lệ.",
+  "INVALID_PAYLOAD": "Payload không hợp lệ.",
+
+  "CATEGORY_NOT_FOUND": "Không tìm thấy danh mục.",
+  "CATEGORY_ALREADY_EXISTS": "Danh mục đã tồn tại.",
+  "CATEGORY_TRANSLATION_REQUIRED": "Cần ít nhất một bản dịch cho danh mục.",
+
+  "LANGUAGE_NOT_SUPPORTED": "Ngôn ngữ không được hỗ trợ.",
+  "TRANSLATION_NOT_FOUND": "Không tìm thấy bản dịch.",
+
+  "CREATE_FAILED": "Tạo tài nguyên thất bại.",
+  "UPDATE_FAILED": "Cập nhật tài nguyên thất bại.",
+  "DELETE_FAILED": "Xoá tài nguyên thất bại.",
+
+  "DATABASE_ERROR": "Lỗi cơ sở dữ liệu.",
+  "INTERNAL_SERVER_ERROR": "Lỗi hệ thống."
+}

@@ -9,6 +9,9 @@ export class AppService {
     console.log(
       this.i18n.t('error.NOT_FOUND', {
         lang: I18nContext.current()?.lang,
+        args: {
+          resource: 'Trường',
+        },
       }),
     );
 

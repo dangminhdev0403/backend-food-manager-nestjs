@@ -1,11 +1,11 @@
 {
   "INVALID_TYPE": "Sai kiểu dữ liệu",
-  "REQUIRED": "Trường {{field}} là bắt buộc",
-  "STRING_MIN": "{{field}} phải có ít nhất {{min}} ký tự",
-  "STRING_MAX": "{{field}} chỉ được tối đa {{max}} ký tự",
-  "NUMBER_MIN": "{{field}} phải ≥ {{min}}",
-  "NUMBER_MAX": "{{field}} phải ≤ {{max}}",
-  "INVALID_ENUM": "{{field}} không hợp lệ",
-  "UNRECOGNIZED_KEYS": "Có trường không được phép: {{keys}}",
-  "CUSTOM": "{{message}}"
+  "REQUIRED": "Trường {field} là bắt buộc",
+  "STRING_MIN": "{field} phải có ít nhất {min} ký tự",
+  "STRING_MAX": "{field} chỉ được tối đa {max} ký tự",
+  "NUMBER_MIN": "{field} phải ≥ {min}",
+  "NUMBER_MAX": "{field} phải ≤ {max}",
+  "INVALID_ENUM": "{field} không hợp lệ",
+  "UNRECOGNIZED_KEYS": "Có trường không được phép: {keys}",
+  "CUSTOM": "{message}"
 }

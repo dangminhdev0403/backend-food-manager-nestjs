@@ -9,7 +9,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { Response } from 'express';
 import { Prisma } from 'generated/prisma/client';
 import { I18nContext, I18nService } from 'nestjs-i18n';
@@ -28,7 +27,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     let error: any = null;
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = this.i18n.t('exceptionHanlder.INTERNAL_SERVER_ERROR', { lang: I18nContext.current()?.lang });
+    let message;
 
     switch (true) {
       // 🟦 Xử lý ZodValidationException trước
@@ -43,7 +42,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
         return response.status(status).json({
           status,
-          error: 'Dữ liệu không hợp lệ',
+          error: this.i18n.t('exceptionHandler.VALIDATION_FAILED', { lang: I18nContext.current()?.lang }),
           message: errors,
           data: null,
         });
@@ -56,7 +55,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           error = res?.error;
           message = res?.message;
         } else {
-          message = res || 'Yêu cầu không hợp lệ';
+          message = res || this.i18n.t('exceptionHandler.BAD_REQUEST', { lang: I18nContext.current()?.lang });
         }
         break;
       }
@@ -68,19 +67,19 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         if (typeof res === 'object') {
           return response.status(status).json({
             status,
-            error: res.error ?? 'Unauthorized',
-            message: res.message ?? 'Unauthorized',
+            error: res.error ?? this.i18n.t('exceptionHandler.UNAUTHORIZED', { lang: I18nContext.current()?.lang }),
+            message: res.message ?? this.i18n.t('exceptionHandler.UNAUTHORIZED', { lang: I18nContext.current()?.lang }),
             data: res.data ?? null,
           });
         }
 
-        message = res || 'Unauthorized';
+        message = res || this.i18n.t('exceptionHandler.UNAUTHORIZED', { lang: I18nContext.current()?.lang });
         break;
       }
 
       case exception instanceof NotFoundException: {
         status = HttpStatus.NOT_FOUND;
-        message = exception.message || 'Không tìm thấy';
+        message = exception.message || this.i18n.t('exceptionHandler.NOT_FOUND');
         break;
       }
       case exception instanceof Prisma.PrismaClientKnownRequestError: {
@@ -101,7 +100,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             message = `Duplicate value for field: ${fields?.join(', ')}`;
             return response.status(HttpStatus.CONFLICT).json({
               status: 409,
-              error: 'Unique constraint violated',
+              error: this.i18n.t('prisma.P2002', { lang: I18nContext.current()?.lang }),
               message: message,
             });
           }
@@ -109,14 +108,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           case 'P2003':
             return response.status(HttpStatus.BAD_REQUEST).json({
               status: 400,
-              error: 'Foreign key constraint failed',
+              error: this.i18n.t('prisma.P2003', { lang: I18nContext.current()?.lang }),
               message: exception.meta?.field,
             });
 
           case 'P2025':
             return response.status(HttpStatus.BAD_REQUEST).json({
               status: 400,
-              error: 'Record is invalid',
+              error: this.i18n.t('prisma.P2025', { lang: I18nContext.current()?.lang }),
               message: 'An operation failed because it depends on one or more records that were required but not found',
             });
 
@@ -141,7 +140,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       }
 
       default: {
-        message = 'Lỗi không xác định';
+        message = this.i18n.t('exceptionHandler.INTERNAL_SERVER_ERROR', { lang: I18nContext.current()?.lang });
         break;
       }
     }
