@@ -16,13 +16,12 @@ export class PermissionService {
     private readonly roleService: RoleService,
   ) {}
   async getListPermission(roleIds: number[]) {
-    // await this.roleService.blockWithNotAdminRole( roleIds);
     const listPermissions = await this.permissionRepository.getListPermissionGroupedList();
     return groupByModule(listPermissions);
   }
 
   async getPermissionByRoleId(roleId: number, roleIds: number[]) {
-    await this.roleService.blockWithNotAdminRole(roleIds);
+     this.roleService.blockWithNotAdminRole(roleIds);
     const permission = await this.permissionRepository.getPermissionByRoleId(roleId);
     return groupByModule(permission);
   }

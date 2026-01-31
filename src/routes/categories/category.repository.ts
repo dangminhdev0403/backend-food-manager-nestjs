@@ -1,14 +1,113 @@
-import { Injectable } from '@nestjs/common';
-import { CategoryCreateInput } from 'generated/prisma/models';
+import { Injectable, Logger } from '@nestjs/common';
+import { CreateCategoryType, UpdateCategoryType } from 'src/routes/categories/category.model';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
 export class CategoryRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(category: CategoryCreateInput) {
-    return await this.prismaService.category.create({
-      data: category,
+  async findAll(code: string) {
+    return this.prismaService.category.findMany({
+      where: {
+        translations: {
+          some: {
+            Language: { code },
+          },
+        },
+      },
+      select: {
+        id: true,
+        translations: {
+          where: {
+            Language: { code },
+          },
+          select: {
+            name: true,
+            description: true,
+            Language: {
+              select: {
+                code: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async findOneForUpdate(id: number) {
+    return this.prismaService.category.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        createdById: true,
+        updatedById: true,
+        createdAt: true,
+        updatedAt: true,
+        translations: {
+          select: {
+            languageId: true,
+            name: true,
+            description: true,
+            Language: {
+              select: {
+                code: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: {
+            languageId: 'asc',
+          },
+        },
+      },
+    });
+  }
+
+  async create(dto: CreateCategoryType, userId: number) {
+    return this.prismaService.category.create({
+      data: {
+        translations: {
+          create: dto.translations.map((t) => ({
+            languageId: t.languageId,
+            name: t.name,
+            description: t.description,
+          })),
+        },
+      },
+      select: {
+        translations: {
+          select: {
+            name: true,
+            description: true,
+          },
+        },
+      },
+    });
+  }
+
+  async update(dto: UpdateCategoryType, userId) {
+    Logger.debug(dto);
+    return this.prismaService.category.update({
+      where: {
+        id: dto.categoryId,
+      },
+      data: {
+        translations: {
+          updateMany: dto.translations.map((t) => ({
+            where: {
+              categoryId: dto.categoryId,
+              languageId: t.languageId,
+            },
+            data: {
+              ...(t.name && { name: t.name }),
+              ...(t.description && { description: t.description }),
+              updatedById: userId,
+            },
+          })),
+        },
+        updatedById: userId,
+      },
     });
   }
 }

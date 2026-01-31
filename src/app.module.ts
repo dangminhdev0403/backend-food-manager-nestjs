@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE, DiscoveryModule, Reflector } from '@nestjs/core';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { ZodValidationPipe } from 'nestjs-zod';
+import path from 'path';
 import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 import { PermissionModule } from 'src/routes/permissions/permission.module';
 import { ProductModule } from 'src/routes/products/product.module';
+import { GlobalExceptionFilter } from 'src/shared/errors/exception.filter';
 import { CatchEverythingFilter } from 'src/shared/filters/catch-everything.filter';
 import { HttpExceptionFilter } from 'src/shared/filters/custom-zod-filter.pipe';
 import { AppController } from './app.controller';
@@ -20,6 +23,15 @@ import { UserModule } from './routes/users/user.module';
 
 @Module({
   imports: [
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.resolve('src/i18n/'),
+        watch: true,
+      },
+      resolvers: [{ use: QueryResolver, options: ['lang'] }, AcceptLanguageResolver],
+      typesOutputPath: path.resolve('src/generated/i18n.generated.ts'),
+    }),
     RoleModule,
     ConfigModule.forRoot({ isGlobal: true }),
     JwtGlobalModule,
@@ -51,6 +63,10 @@ import { UserModule } from './routes/users/user.module';
     {
       provide: APP_FILTER,
       useClass: CatchEverythingFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
     },
     {
       provide: APP_FILTER,

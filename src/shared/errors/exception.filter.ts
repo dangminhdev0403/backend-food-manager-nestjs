@@ -9,21 +9,26 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { Response } from 'express';
 import { Prisma } from 'generated/prisma/client';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 import { ZodValidationException } from 'nestjs-zod';
+import { I18nTranslations } from 'src/generated/i18n.generated';
 import { ResponseData } from 'src/shared/constants/response.constant';
 import { ZodError } from 'zod';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  constructor(private readonly i18n: I18nService<I18nTranslations>) {}
+
   private readonly logger = new Logger(GlobalExceptionFilter.name);
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     let error: any = null;
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Lỗi chưa xác định';
+    let message = this.i18n.t('exceptionHanlder.INTERNAL_SERVER_ERROR', { lang: I18nContext.current()?.lang });
 
     switch (true) {
       // 🟦 Xử lý ZodValidationException trước

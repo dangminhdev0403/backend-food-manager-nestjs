@@ -4,10 +4,9 @@ import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 
 export class SwaggerConfig {
-
-    static enable(app: INestApplication): boolean {
-  return process.env.NODE_ENV !== 'production'; // tắt UI trong production
-} 
+  static enable(app: INestApplication): boolean {
+    return process.env.NODE_ENV !== 'production'; // tắt UI trong production
+  }
   static createDocument(app: INestApplication): OpenAPIObject {
     const config = new DocumentBuilder()
       .setTitle('API Documentation')

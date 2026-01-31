@@ -32,7 +32,6 @@ async function bootstrap() {
     app.use('/swagger-json', (req, res) => res.json(document));
   }
 
-  app.useGlobalFilters(new GlobalExceptionFilter());
   app.enableCors({
     origin: ['http://192.168.1.11:3000', 'http://localhost:3000'],
     credentials: true,

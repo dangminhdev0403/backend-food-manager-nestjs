@@ -24,18 +24,11 @@ model CartItem {
 }
 
 model Category {
-  id       Int        @id @default(autoincrement())
-  parentId Int?
- 
-  // Tree relation
-  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryTree")
+  id Int @id @default(autoincrement())
 
   // Audit
   createdById Int?
   updatedById Int?
-  createdBy   User? @relation("CategoryCreatedBy", fields: [createdById], references: [id])
-  updatedBy   User? @relation("CategoryUpdatedBy", fields: [updatedById], references: [id])
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -43,23 +36,26 @@ model Category {
 
   translations CategoryTranslation[]
   products     Product[]
+  user         User?                 @relation(fields: [userId], references: [id])
+  userId       Int?
+
+  @@index([deletedAt])
 }
 
 model CategoryTranslation {
-  id                                         Int       @id @default(autoincrement())
-  categoryId                                 Int
-  languageId                                 Int
-  name                                       String    @db.VarChar(500)
-  description                                String
-  createdById                                Int?
-  updatedById                                Int?
-  deletedAt                                  DateTime?
-  createdAt                                  DateTime  @default(now())
-  updatedAt                                  DateTime
-  Category                                   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  User_CategoryTranslation_createdByIdToUser User?     @relation("CategoryTranslation_createdByIdToUser", fields: [createdById], references: [id], onUpdate: NoAction)
-  Language                                   Language  @relation(fields: [languageId], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  User_CategoryTranslation_updatedByIdToUser User?     @relation("CategoryTranslation_updatedByIdToUser", fields: [updatedById], references: [id], onUpdate: NoAction)
+  id          Int       @id @default(autoincrement())
+  categoryId  Int
+  languageId  Int
+  name        String    @db.VarChar(500)
+  description String
+  createdById Int?
+  updatedById Int?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Language    Language  @relation(fields: [languageId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@unique([categoryId, languageId])
 }
 
 model Language {
@@ -144,8 +140,8 @@ model Product {
   images              String[]
   cookingInstructions String   @default("") @db.VarChar(1000)
 
-  ownerId             Int
-  owner               User     @relation("UserProducts", fields: [ownerId], references: [id])
+  ownerId Int
+  owner   User @relation("UserProducts", fields: [ownerId], references: [id])
 
   // Audit
   createdById Int?
@@ -292,36 +288,33 @@ model SKU {
 }
 
 model User {
-  id                                                        Int                   @id @default(autoincrement())
-  email                                                     String                @unique
-  name                                                      String                @db.VarChar(500)
-  password                                                  String                @db.VarChar(500)
-  phoneNumber                                               String?               @db.VarChar(50)
-  avatar                                                    String?               @db.VarChar(1000)
-  totpSecret                                                String?               @unique @db.VarChar(1000)
-  userRoles                                                 UserHasRole[]
-  status                                                    UserStatus            @default(INACTIVE)
-  createdById                                               Int?
-  updatedById                                               Int?
-  deletedAt                                                 DateTime?
-  createdAt                                                 DateTime              @default(now())
-  updatedAt                                                 DateTime              @updatedAt
-  passwordVersions                                          Int?                  @default(0)
-  devices                                                   Device[]
-  CartItem                                                  CartItem[]
-  createdCategories                                         Category[]            @relation("CategoryCreatedBy")
-  updatedCategories                                         Category[]            @relation("CategoryUpdatedBy")
-  CategoryTranslation_CategoryTranslation_createdByIdToUser CategoryTranslation[] @relation("CategoryTranslation_createdByIdToUser")
-  CategoryTranslation_CategoryTranslation_updatedByIdToUser CategoryTranslation[] @relation("CategoryTranslation_updatedByIdToUser")
-  Language_Language_createdByIdToUser                       Language[]            @relation("Language_createdByIdToUser")
-  Language_Language_updatedByIdToUser                       Language[]            @relation("Language_updatedByIdToUser")
-  Message_Message_fromUserIdToUser                          Message[]             @relation("Message_fromUserIdToUser")
-  Message_Message_toUserIdToUser                            Message[]             @relation("Message_toUserIdToUser")
-  Order_Order_createdByIdToUser                             Order[]               @relation("Order_createdByIdToUser")
-  Order_Order_updatedByIdToUser                             Order[]               @relation("Order_updatedByIdToUser")
-  Order_Order_userIdToUser                                  Order[]               @relation("Order_userIdToUser")
+  id               Int           @id @default(autoincrement())
+  email            String        @unique
+  name             String        @db.VarChar(500)
+  password         String        @db.VarChar(500)
+  phoneNumber      String?       @db.VarChar(50)
+  avatar           String?       @db.VarChar(1000)
+  totpSecret       String?       @unique @db.VarChar(1000)
+  userRoles        UserHasRole[]
+  status           UserStatus    @default(INACTIVE)
+  createdById      Int?
+  updatedById      Int?
+  deletedAt        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  passwordVersions Int?          @default(0)
+  devices          Device[]
+  CartItem         CartItem[]
+
+  Language_Language_createdByIdToUser Language[] @relation("Language_createdByIdToUser")
+  Language_Language_updatedByIdToUser Language[] @relation("Language_updatedByIdToUser")
+  Message_Message_fromUserIdToUser    Message[]  @relation("Message_fromUserIdToUser")
+  Message_Message_toUserIdToUser      Message[]  @relation("Message_toUserIdToUser")
+  Order_Order_createdByIdToUser       Order[]    @relation("Order_createdByIdToUser")
+  Order_Order_updatedByIdToUser       Order[]    @relation("Order_updatedByIdToUser")
+  Order_Order_userIdToUser            Order[]    @relation("Order_userIdToUser")
   // Ownership relation
-  products                                                  Product[]             @relation("UserProducts")
+  products                            Product[]  @relation("UserProducts")
 
   // Audit reverse
   createdProducts                                         Product[]            @relation("ProductCreatedBy")
@@ -345,6 +338,7 @@ model User {
   Variant_Variant_updatedByIdToUser                       Variant[]            @relation("Variant_updatedByIdToUser")
   VariantOption_VariantOption_createdByIdToUser           VariantOption[]      @relation("VariantOption_createdByIdToUser")
   VariantOption_VariantOption_updatedByIdToUser           VariantOption[]      @relation("VariantOption_updatedByIdToUser")
+  categories                                              Category[]
 }
 
 model UserTranslation {
