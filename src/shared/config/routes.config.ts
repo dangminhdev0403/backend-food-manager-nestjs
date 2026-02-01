@@ -6,7 +6,16 @@ import { PublicRouteMatcher } from 'src/shared/config/public-route.matcher';
  * ❌ KHÔNG dùng wildcard cho /auth/** (security risk)
  */
 //  ! Lưu ý : đã dùng route bên PUBLIC_REGEX thì không dùng PUBLIC_PATTERNS , ví dụ : có  /^\/auth\/((?!logout|refresh).*)$/ thì không dùng /auth/**  !*/
-export const PUBLIC_PATTERNS = ['/', '/chat', '/languages/**', '/media/**', '/api/**', '/order-result/**'];
+export const PUBLIC_PATTERNS = [
+  '/',
+  '/chat',
+  '/languages/**',
+  '/media/**',
+  '/api/**',
+  '/order-result/**',
+  '/categories/**',
+  '/products/**',
+];
 
 /**
  * REGEX EXCEPTIONS (rare)

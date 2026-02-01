@@ -77,6 +77,7 @@ export class CategoryRepository {
   async create(dto: CreateCategoryType, userId: number) {
     return this.prismaService.category.create({
       data: {
+        createdById: userId,
         translations: {
           create: dto.translations.map((t) => ({
             languageId: t.languageId,

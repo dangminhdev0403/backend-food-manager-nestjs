@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { DiscoveryService } from '@nestjs/core';
 import { Prisma } from 'generated/prisma/client';
-import { ignoreMatcher, publicMatcher } from 'src/shared/config/routes.config';
+import { ignoreMatcher } from 'src/shared/config/routes.config';
 import { METHOD_MAP, RouteMeta } from 'src/shared/constants/initialize.constant';
 
 // Predicate to check for unique constraint errors , web check code error : https://www.prisma.io/docs/orm/reference/error-reference
@@ -10,7 +10,7 @@ export function isUniqueConstraintError(error: any): error is Prisma.PrismaClien
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
 }
 export function isPublicRoute(path: string): boolean {
-  return  ignoreMatcher.isPublic(path) ;
+  return ignoreMatcher.isPublic(path);
 }
 
 export function collectRoutesMetadata(app) {
@@ -89,4 +89,17 @@ export function groupByModule(list: Array<any>) {
   );
 
   return grouped;
+}
+
+export function omitUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
+  const result: Partial<T> = {};
+
+  for (const key in obj) {
+    const value = obj[key];
+    if (value !== undefined) {
+      result[key] = value;
+    }
+  }
+
+  return result;
 }
