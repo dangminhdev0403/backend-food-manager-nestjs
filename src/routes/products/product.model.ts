@@ -17,41 +17,39 @@ const ProductBaseSchema = ProductCreateInputObjectZodSchema.pick({
   virtualPrice: true,
 })
   .extend({
+    imagesId: z.array(z.number()).optional(),
     categoryId: z.number().int().positive(),
     translations: z.array(BaseProductTranslationSchema).min(1),
   })
 
   .strict();
 
-export const ProductCreateBodySchema = ProductBaseSchema.extend({
-  cookingInstructions: z.string(),
-})
-  .superRefine((data, ctx) => {
-    if (data.basePrice == null) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['basePrice'],
-        message: 'basePrice không được để trống',
-      });
-      return;
-    }
+export const ProductCreateBodySchema = ProductBaseSchema.superRefine((data, ctx) => {
+  if (data.basePrice == null) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['basePrice'],
+      message: 'basePrice không được để trống',
+    });
+    return;
+  }
 
-    if (data.virtualPrice != null && data.virtualPrice < data.basePrice) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['virtualPrice'],
-        message: 'Giá niêm yết phải lớn hơn hoặc bằng giá bán',
-      });
-    }
-  })
-  .transform((data) => ({
-    ...data,
-    virtualPrice: data.virtualPrice ?? data.basePrice,
-  }));
+  if (data.virtualPrice != null && data.virtualPrice < data.basePrice) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['virtualPrice'],
+      message: 'Giá niêm yết phải lớn hơn hoặc bằng giá bán',
+    });
+  }
+}).transform((data) => ({
+  ...data,
+  virtualPrice: data.virtualPrice ?? data.basePrice,
+}));
 
 export const ProductUpdateBodySchema = ProductBaseSchema.partial()
   .extend({
     cookingInstructions: z.string().optional(),
+    imagesId: z.array(z.number()).optional(),
 
     id: z.number().int().positive(),
   })

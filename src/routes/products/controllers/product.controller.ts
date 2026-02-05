@@ -1,8 +1,7 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ProductCreateBodyDTO } from 'src/routes/products/product.dto';
 import { ProductService } from 'src/routes/products/product.service';
-import { RequestLogined } from 'src/shared/constants/auth.constant';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
 
 @ApiTags('API sản phẩn ')
@@ -10,13 +9,21 @@ import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
 @UseGuards(AuthorizationGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-
-  @Post()
+  @Get()
   @ApiOperation({
-    summary: 'Tạo món ăn',
-    description: 'Tạo mới một món ăn ',
+    summary: 'Lấy danh sách món ăn',
+    description: 'Lấy danh sách  một món ăn ',
   })
-  async createProduct(@Body() productInput: ProductCreateBodyDTO, @Request() req: RequestLogined) {
-    return this.productService.createProduct(productInput, req.user.id);
+  async getListProduct(@Query() query: PaginationDTOQuery) {
+    return this.productService.getListProduct(query);
+  }
+
+  @Get('get-one/:id')
+  @ApiOperation({
+    summary: 'Xoá món ăn',
+    description: 'Thực hiện xoá mềm món ăn theo ID.',
+  })
+  async getProductById(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.findById(id);
   }
 }

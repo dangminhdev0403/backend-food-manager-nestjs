@@ -4,6 +4,7 @@ https://docs.nestjs.com/modules
 
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ImageProductRepository } from 'src/shared/repositories/image-product.repository';
 import { ProductRepository } from 'src/shared/repositories/product.repository';
 import { SharedTokenRepository } from 'src/shared/repositories/token.repository';
 import { SharedUserRepository } from 'src/shared/repositories/user.repository';
@@ -18,6 +19,7 @@ const sharedServices = [
   SharedUserRepository,
   SharedTokenRepository,
   ProductRepository,
+  ImageProductRepository,
 ];
 
 @Global()

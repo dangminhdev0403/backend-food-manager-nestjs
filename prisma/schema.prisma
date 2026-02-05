@@ -134,13 +134,32 @@ model Permission {
   @@index([method, path, module])
 }
 
+model ImageProduct {
+  id        Int         @id @default(autoincrement())
+  url       String
+  status    ImageStatus @default(TEMP)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  deletedAt DateTime?
+  product   Product?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+
+  @@index([productId])
+}
+
+enum ImageStatus {
+  TEMP // upload xong, chưa attach
+  ACTIVE // đang dùng
+  DELETED // soft delete
+}
+
 model Product {
-  id           Int      @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   basePrice    Float
   virtualPrice Float
-  images       String[]
+  images       ImageProduct[]
   ownerId      Int
-  owner        User     @relation("UserProducts", fields: [ownerId], references: [id])
+  owner        User    @relation("UserProducts", fields: [ownerId], references: [id])
 
   // Audit
   createdById Int?

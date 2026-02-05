@@ -21,6 +21,11 @@ export class ProductRepository {
             id: true,
           },
         },
+        images: {
+          select: {
+            url: true,
+          },
+        },
         ProductTranslation: {
           select: {
             Language: {
@@ -52,6 +57,11 @@ export class ProductRepository {
             id: true,
           },
         },
+        images: {
+          select: {
+            url: true,
+          },
+        },
         ProductTranslation: {
           select: {
             Language: {
@@ -68,13 +78,86 @@ export class ProductRepository {
     });
   }
 
-  async findAll(pageable: PaginationDTOQuery) {
+  async findAll(pageable: PaginationDTOQuery, code: string) {
     const { page, size } = normalizePagination(pageable);
     const args = {
-      where: { deletedAt: null },
-      // select: { id: true, name: true, code: true },
+      where: {
+        deletedAt: null,
+        ProductTranslation: {
+          some: {
+            Language: { code },
+          },
+        },
+      },
+      select: {
+        id: true,
+        basePrice: true,
+        virtualPrice: true,
+        ProductTranslation: {
+          select: {
+            name: true,
+            description: true,
+            cookingInstructions: true,
+          },
+        },
+        images: {
+          select: {
+            url: true,
+          },
+        },
+      },
     } satisfies Prisma.ProductFindManyArgs;
 
-    return prismaPaginate(this.prismaService.language, args, page, size);
+    return prismaPaginate(this.prismaService.product, args, page, size);
+  }
+
+  async findById(id: number, code:string) {
+    return this.prismaService.product.findFirst({
+      where: {
+        id,
+        ProductTranslation: {
+          some: {
+            Language: {
+                code 
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        basePrice: true,
+        virtualPrice: true,
+        Category: true,
+        ProductTranslation: {
+          select: {
+            name: true,
+            cookingInstructions: true,
+          },
+        },
+      },
+    });
+  }
+  async softDelete(productId: number, userId: number) {
+    return this.prismaService.product.update({
+      where: {
+        id: productId,
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+        updatedById: userId,
+      },
+    });
+  }
+  async restoreCategory(categoryId: number, userId: number) {
+    return this.prismaService.product.update({
+      where: {
+        id: categoryId,
+      },
+      data: {
+        deletedAt: null,
+        updatedById: userId,
+      },
+    });
   }
 }

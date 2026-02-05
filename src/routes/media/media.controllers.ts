@@ -9,10 +9,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { MediaService } from 'src/routes/media/media.service';
 
 @ApiTags('Media')
 @Controller('media')
 export class MediaController {
+  constructor(private readonly mediaService: MediaService) {}
+
   @Post('images/upload')
   @ApiOperation({ summary: 'Media', description: 'Upload image' })
   @UseInterceptors(FileInterceptor('file'))
@@ -27,11 +30,6 @@ export class MediaController {
     )
     file: Express.Multer.File,
   ) {
-    
-    return {
-      name: file.originalname,
-      size: file.size,
-      mime: file.mimetype,
-    };
+    return this.mediaService.upLoadAndSaveImageProduct(file);
   }
 }

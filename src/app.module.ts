@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE, DiscoveryModule, Reflector } from '@nestjs/core';
+import { CloudinaryModule } from 'nestjs-cloudinary';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { ZodValidationPipe } from 'nestjs-zod';
 import path from 'path';
@@ -23,6 +24,17 @@ import { UserModule } from './routes/users/user.module';
 
 @Module({
   imports: [
+    CloudinaryModule.forRootAsync({
+      imports: [ConfigModule],
+
+      useFactory: (configService: ConfigService) => ({
+        isGlobal: true,
+        cloud_name: configService.get('CLOUDINARY_CLOUD_NAME'),
+        api_key: configService.get('CLOUDINARY_API_KEY'),
+        api_secret: configService.get('CLOUDINARY_API_SECRET'),
+      }),
+      inject: [ConfigService],
+    }),
     I18nModule.forRoot({
       fallbackLanguage: 'vi',
       loaderOptions: {

@@ -26,6 +26,9 @@ const ConfigSchema = z.object({
   OTP_EXPIRES_IN: z.coerce.number(),
   PORT: z.string(),
   NODE_ENV: z.enum(['development', 'production']),
+  CLOUDINARY_API_SECRET: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_CLOUD_NAME: z.string(),
 });
 const parseResult = ConfigSchema.safeParse(process.env);
 if (!parseResult.success) {
