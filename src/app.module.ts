@@ -8,6 +8,7 @@ import path from 'path';
 import { JwtGlobalModule } from 'src/routes/auth/passport/jwt.module';
 import { PermissionModule } from 'src/routes/permissions/permission.module';
 import { ProductModule } from 'src/routes/products/product.module';
+import { TableModule } from 'src/routes/tables/table.module';
 import { GlobalExceptionFilter } from 'src/shared/errors/exception.filter';
 import { CatchEverythingFilter } from 'src/shared/filters/catch-everything.filter';
 import { HttpExceptionFilter } from 'src/shared/filters/custom-zod-filter.pipe';
@@ -18,6 +19,7 @@ import { AuthModule } from './routes/auth/auth.module';
 import { CategoryModule } from './routes/categories/category.module';
 import { LanguagesModule } from './routes/languages/language.module';
 import { MediaModule } from './routes/media/media.module';
+import { OrderModule } from './routes/orders/order.module';
 import { ProfileModule } from './routes/profile/profile.module';
 import { RoleModule } from './routes/roles/role.module';
 import { UserModule } from './routes/users/user.module';
@@ -56,6 +58,8 @@ import { UserModule } from './routes/users/user.module';
     ProductModule,
     LanguagesModule,
     CategoryModule,
+    TableModule,
+    OrderModule,
   ],
   controllers: [AuthController, AppController],
   providers: [
