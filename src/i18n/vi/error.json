@@ -3,5 +3,6 @@
   "ALREADY_EXISTS": "{resource} đã tồn tại.",
   "INVALID_FIELD": "Giá trị không hợp lệ: {field}.",
   "FORBIDDEN_ACTION": "Bạn không có quyền thực hiện {action}.",
-  "TRANSLATION_NOT_FOUND": "Không tìm thấy bản dịch cho ngôn ngữ {code}."
+  "TRANSLATION_NOT_FOUND": "Không tìm thấy bản dịch cho ngôn ngữ {code}.",
+  "HAS_TAKEN_TABLE": "Bàn này đã có người sử dụng."
 }

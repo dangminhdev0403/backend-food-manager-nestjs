@@ -11,6 +11,7 @@ export type I18nTranslations = {
         "INVALID_FIELD": string;
         "FORBIDDEN_ACTION": string;
         "TRANSLATION_NOT_FOUND": string;
+        "HAS_TAKEN_TABLE": string;
     };
     "exceptionHandler": {
         "NOT_FOUND": string;

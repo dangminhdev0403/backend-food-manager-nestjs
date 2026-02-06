@@ -3,5 +3,6 @@
   "ALREADY_EXISTS": "{resource} already exists.",
   "INVALID_FIELD": "Invalid value for field: {field}.",
   "FORBIDDEN_ACTION": "You are not allowed to {action}.",
-  "TRANSLATION_NOT_FOUND": "Translation for language {code} was not found."
+  "TRANSLATION_NOT_FOUND": "Translation for language {code} was not found.",
+  "HAS_TAKEN_TABLE": "This table is already taken."
 }

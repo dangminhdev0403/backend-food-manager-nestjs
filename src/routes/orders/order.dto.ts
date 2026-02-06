@@ -1,5 +1,16 @@
 import { createZodDto } from 'nestjs-zod';
-import { CreateCategorySchema, UpdateCategorySchema } from 'src/routes/categories/category.model';
+import {
+  AddItemOrderBodySchema,
+  CreateGuestOrderBodySchema,
+  CreateUserOrderBodySchema,
+  UpdateGuestOrderBodySchema,
+  UpdateItemOrderBodySchema,
+  UpdateUserOrderBodySchema,
+} from 'src/routes/orders/order.model';
 
-export class CategoryCreateBodyDto extends createZodDto(CreateCategorySchema) {}
-export class CategoryUpdateBodyDto extends createZodDto(UpdateCategorySchema) {}
+export class OrderGuestCreateBodyDto extends createZodDto(CreateGuestOrderBodySchema) {}
+export class OrderGuestUpdateBodyDto extends createZodDto(UpdateGuestOrderBodySchema) {}
+export class OrderUsertCreateBodyDto extends createZodDto(CreateUserOrderBodySchema) {}
+export class OrderUsertUpdateBodyDto extends createZodDto(UpdateUserOrderBodySchema) {}
+export class AddItemsOrderBodyDto extends createZodDto(AddItemOrderBodySchema) {}
+export class UpdateItemsOrderBodyDto extends createZodDto(UpdateItemOrderBodySchema) {}

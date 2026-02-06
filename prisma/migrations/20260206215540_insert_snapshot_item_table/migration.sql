@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "OrderItemTranslation" ADD COLUMN     "cookingInstructions" VARCHAR(1000) NOT NULL DEFAULT '',
+ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

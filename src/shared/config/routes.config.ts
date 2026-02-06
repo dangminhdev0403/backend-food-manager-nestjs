@@ -15,6 +15,7 @@ export const PUBLIC_PATTERNS = [
   '/order-result/**',
   '/categories/**',
   '/products/**',
+  '/guest/**',
 ];
 
 /**
@@ -25,6 +26,8 @@ export const PUBLIC_PATTERNS = [
 export const PUBLIC_REGEX = [
   // Public auth endpoints, exclude logout & refresh-token
   /^\/auth\/((?!logout|refresh).*)$/,
+  // ❌ loại trừ toàn bộ /admin/**
+  /^(?!\/admin\/).*/,
 ];
 
 /**

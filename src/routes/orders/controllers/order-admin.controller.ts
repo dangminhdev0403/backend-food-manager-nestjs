@@ -4,6 +4,6 @@ import { OrderService } from 'src/routes/orders/order.service';
 
 @ApiTags('Admin quản lý đơn hàng')
 @Controller('admin/orders')
-export class OrderController {
+export class AdminOrderController {
   constructor(private readonly orderService: OrderService) {}
 }
