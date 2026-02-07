@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
-import { AddItemsOrderBodyDto, OrderGuestCreateBodyDto } from 'src/routes/orders/order.dto';
+import { ChooseItemsOrderBodyDto, OrderGuestCreateBodyDto } from 'src/routes/orders/order.dto';
 import { OrderRepository } from 'src/routes/orders/order.repository';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class OrderService {
     return order;
   }
 
-  async addItems(dto: AddItemsOrderBodyDto) {
+  async chooseItems(dto: ChooseItemsOrderBodyDto) {
     const code = I18nContext.current()?.lang as string;
 
     return this.orderRepository.addItems(dto.orderId, dto.items, code);

@@ -1,6 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AddItemsOrderBodyDto, OrderGuestCreateBodyDto } from 'src/routes/orders/order.dto';
+import { ChooseItemsOrderBodyDto, OrderGuestCreateBodyDto } from 'src/routes/orders/order.dto';
 import { OrderService } from 'src/routes/orders/order.service';
 
 @ApiTags('Guest gọi món')
@@ -17,8 +17,9 @@ export class GuestOrderController {
     return this.orderService.createTable(createOrderDto);
   }
 
-  @Post('add-items')
-  async addItem(@Body() addOrderItemsDto: AddItemsOrderBodyDto) {
-    return this.orderService.addItems(addOrderItemsDto);
+  @Post('choose-items')
+  @HttpCode(200)
+  async chooseItems(@Body() dto: ChooseItemsOrderBodyDto) {
+    return this.orderService.chooseItems(dto);
   }
 }

@@ -142,6 +142,7 @@ model OrderItemTranslation {
 enum OrderStatus {
   PENDING
   CONFIRMED
+  COOKING
   PAID
   CANCELLED
 }

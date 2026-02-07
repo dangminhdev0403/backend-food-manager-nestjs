@@ -49,7 +49,6 @@ export class OrderRepository {
 
   async addItems(orderId: number, items: { productId: number; quantity: number }[], code: string) {
     let orderItem;
-    console.log(code);
 
     return this.prismaService.$transaction(async (tx) => {
       // 1. Check order
@@ -91,28 +90,28 @@ export class OrderRepository {
           },
         });
         if (existing) {
-          orderItem = await tx.orderItem.update({
-            where: { id: existing.id },
-            data: {
-              quantity: existing.quantity + item.quantity,
-            },
-            select: {
-              id: true,
-              orderItemTranslations: {
-                where: {
-                  Language: {
-                    code,
+            orderItem = await tx.orderItem.update({
+              where: { id: existing.id },
+              data: {
+                quantity: item.quantity,
+              },
+              select: {
+                id: true,
+                orderItemTranslations: {
+                  where: {
+                    Language: {
+                      code,
+                    },
+                  },
+                  select: {
+                    name: true,
+                    description: true,
                   },
                 },
-                select: {
-                  name: true,
-                  description: true,
-                },
+                price: true,
+                quantity: true,
               },
-              price: true,
-              quantity: true,
-            },
-          });
+            });
         } else {
           orderItem = await tx.orderItem.create({
             data: {
