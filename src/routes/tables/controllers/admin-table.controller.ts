@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TableCreateBodyDTO } from 'src/routes/tables/table.dto';
 import { TableService } from 'src/routes/tables/table.service';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
 @ApiTags('Admin Quản lí bàn ăn')
 @Controller('/admin/tables')
@@ -14,7 +15,7 @@ export class AdminTableController {
     return this.tableService.createTable(tableData);
   }
   @Get()
-  async getListTable() {
-    return this.tableService.getListTable();
+  async getListTable(@Query() query: PaginationDTOQuery) {
+    return this.tableService.getListTable(query);
   }
 }

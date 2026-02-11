@@ -21,7 +21,6 @@ export class AuthorizationGuard implements CanActivate {
 
     const req = ctx.switchToHttp().getRequest<RequestLogined>();
     const user = req.user;
-    this.logger.debug('User found: ', user);
 
     if (!user) {
       throw new ForbiddenException('Unauthenticated');

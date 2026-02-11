@@ -11,9 +11,9 @@ export class UserOrderController {
 
   @Post()
   async createOrder(@Body() createOrderDto: OrderUsertCreateBodyDto, @Request() req: RequestLogined) {
-    return this.orderService.createTable({
-      tableId: createOrderDto.tableId,
-      guestName: req.user.name,
-    });
+    // return this.orderService.createTable({
+    //   tableId: createOrderDto.tableId,
+    //   guestName: req.user.name,
+    // });
   }
 }

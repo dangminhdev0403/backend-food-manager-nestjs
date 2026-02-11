@@ -26,8 +26,7 @@ export const PUBLIC_PATTERNS = [
 export const PUBLIC_REGEX = [
   // Public auth endpoints, exclude logout & refresh-token
   /^\/auth\/((?!logout|refresh).*)$/,
-  // ❌ loại trừ toàn bộ /admin/**
-  /^(?!\/admin\/).*/,
+ 
 ];
 
 /**
@@ -35,7 +34,7 @@ export const PUBLIC_REGEX = [
  * ⚠ Dùng cẩn trọng, có thể bỏ qua security layer
  */
 export const IGNORE_PATTERNS = [...PUBLIC_PATTERNS];
-export const IGNORE_REGEX = [...PUBLIC_REGEX];
+export const IGNORE_REGEX = [...PUBLIC_REGEX, /^(?!\/admin\/).*/];
 
 /**
  * Matcher cho runtime request

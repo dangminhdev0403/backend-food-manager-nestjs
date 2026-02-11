@@ -3,6 +3,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
 import { TableCreateBodyDTO } from 'src/routes/tables/table.dto';
 import { TableRepository } from 'src/routes/tables/table.repository';
+import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 
 @Injectable()
 export class TableService {
@@ -11,8 +12,10 @@ export class TableService {
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
-  async getListTable() {
-    return this.tableRepository.findAll();
+  async getListTable(query: PaginationDTOQuery) {
+        const code = I18nContext.current()?.lang as string;
+
+    return this.tableRepository.findAll(query,code);
   }
 
   async createTable(table: TableCreateBodyDTO) {

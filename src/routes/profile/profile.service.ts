@@ -62,7 +62,7 @@ export class ProfileService {
     //? Kiểm tra mật khẩu cũ
     const isMatch = await this.hashingService.compare(oldPassword, user.password);
     if (!isMatch) {
-      throw new BadRequestException({ error: 'Mật khẩu cũ không chính xác', message: 'Old password is incorrect' });
+      throw new BadRequestException({ error: 'Mật khẩu cũ không chính xác', message: 'Mật khẩu cũ không đúng' });
     }
 
     //? Hash mật khẩu mới

@@ -12,6 +12,8 @@ export class ProfileController {
   @Get('me')
   @ApiOperation({ summary: 'User: get Profile' })
   async getProfile(@Request() request: RequestLogined) {
+    console.log(request.user);
+
     return await this.profileService.getProfile(request.user.id);
   }
 

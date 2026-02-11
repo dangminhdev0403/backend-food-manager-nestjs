@@ -28,14 +28,21 @@ export class OrderRepository {
           status: 'OCCUPIED',
         },
       });
-
+      await tx.tableSession.create;
       // 3. Create order
-      return tx.order.create({
+      const tableSession = await tx.tableSession.create({
+        data: {
+          token: crypto.randomUUID(),
+          tableId: tableId,
+        },
+      });
+      const order = await tx.order.create({
         data: {
           guestName,
           tableId,
           status: 'PENDING',
           source: 'GUEST_QR',
+          tableSessionId: tableSession.id,
         },
         select: {
           id: true,
@@ -44,16 +51,27 @@ export class OrderRepository {
           total: true,
         },
       });
+      return {
+        id: order.id,
+        guestName: order.guestName,
+        status: order.status,
+        guestToken: tableSession.token,
+      };
     });
   }
 
-  async addItems(orderId: number, items: { productId: number; quantity: number }[], code: string) {
+  async addItems(
+    orderId: number,
+    tableSessionId: number,
+    items: { productId: number; quantity: number }[],
+    code: string,
+  ) {
     let orderItem;
 
     return this.prismaService.$transaction(async (tx) => {
       // 1. Check order
       const order = await tx.order.findUnique({
-        where: { id: orderId },
+        where: { tableSessionId, id: orderId },
         select: { status: true },
       });
 
@@ -90,28 +108,28 @@ export class OrderRepository {
           },
         });
         if (existing) {
-            orderItem = await tx.orderItem.update({
-              where: { id: existing.id },
-              data: {
-                quantity: item.quantity,
-              },
-              select: {
-                id: true,
-                orderItemTranslations: {
-                  where: {
-                    Language: {
-                      code,
-                    },
-                  },
-                  select: {
-                    name: true,
-                    description: true,
+          orderItem = await tx.orderItem.update({
+            where: { id: existing.id },
+            data: {
+              quantity: item.quantity,
+            },
+            select: {
+              id: true,
+              orderItemTranslations: {
+                where: {
+                  Language: {
+                    code,
                   },
                 },
-                price: true,
-                quantity: true,
+                select: {
+                  name: true,
+                  description: true,
+                },
               },
-            });
+              price: true,
+              quantity: true,
+            },
+          });
         } else {
           orderItem = await tx.orderItem.create({
             data: {
@@ -174,5 +192,37 @@ export class OrderRepository {
       data: { total },
     });
     return total;
+  }
+
+  async guestGetOrder(idSessionTable: number, code: string) {
+    return this.prismaService.order.findFirst({
+      where: {
+        tableSessionId: idSessionTable,
+      },
+      select: {
+        id: true,
+        guestName: true,
+        status: true,
+        items: {
+          select: {
+            id: true,
+            orderItemTranslations: {
+              where: {
+                Language: {
+                  code,
+                },
+              },
+              select: {
+                name: true,
+                description: true,
+              },
+            },
+            price: true,
+            quantity: true,
+          },
+        },
+        total: true,
+      },
+    });
   }
 }

@@ -4,7 +4,11 @@ import { PublicRouteMatcher } from 'src/shared/config/public-route.matcher';
 export interface RequestLogined extends Request {
   user: UserInRequest;
 }
-
+export interface RequestGuest {
+  id: number;
+  tableId: number;
+  token: string;
+}
 export interface UserInRequest {
   id: number;
   email: string;
@@ -41,7 +45,6 @@ export const whitelistMatcher = new PublicRouteMatcher(PUBLIC_ROUTES);
 
 //! routeIgnore  Permissions initialization
 export const routeIgnore = [...whitelist, /^\/auth\/.*/, /^\/profile\/.*/];
-
 
 export const UserStatus = {
   ACTIVE: 'ACTIVE',

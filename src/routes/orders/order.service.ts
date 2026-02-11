@@ -11,7 +11,7 @@ export class OrderService {
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
-  async createTable(createOrderDto: OrderGuestCreateBodyDto) {
+  async createForGuest(createOrderDto: OrderGuestCreateBodyDto) {
     const { tableId, guestName } = createOrderDto;
     const order = await this.orderRepository.createOrder(tableId, guestName);
     if (!order || order == null)
@@ -26,9 +26,15 @@ export class OrderService {
     return order;
   }
 
-  async chooseItems(dto: ChooseItemsOrderBodyDto) {
+  async chooseItems(dto: ChooseItemsOrderBodyDto, tableSesionsId: number) {
     const code = I18nContext.current()?.lang as string;
 
-    return this.orderRepository.addItems(dto.orderId, dto.items, code);
+    return this.orderRepository.addItems(dto.orderId, tableSesionsId, dto.items, code);
+  }
+
+  async getGuestOrder(idSessionTable: number) {
+    const code = I18nContext.current()?.lang as string;
+
+    return await this.orderRepository.guestGetOrder(idSessionTable, code);
   }
 }
