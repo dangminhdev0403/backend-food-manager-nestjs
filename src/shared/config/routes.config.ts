@@ -9,6 +9,7 @@ import { PublicRouteMatcher } from 'src/shared/config/public-route.matcher';
 export const PUBLIC_PATTERNS = [
   '/',
   '/chat',
+  '/auth/refresh-token',
   '/languages/**',
   '/media/**',
   '/api/**',
@@ -26,7 +27,6 @@ export const PUBLIC_PATTERNS = [
 export const PUBLIC_REGEX = [
   // Public auth endpoints, exclude logout & refresh-token
   /^\/auth\/((?!logout|refresh).*)$/,
- 
 ];
 
 /**
