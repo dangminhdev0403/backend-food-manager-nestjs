@@ -40,7 +40,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @ZodSerializerDto(LoginResDTO)
   async login(@UserAgent() userAgent: string, @Ip() ip: string, @Request() req: RequestLogined) {
-    return await this.authService.login(req.user.email, { userAgent, ip });
+    return await  this.authService.login(req.user.email, { userAgent, ip });
   }
 
   @Post('refresh-token')

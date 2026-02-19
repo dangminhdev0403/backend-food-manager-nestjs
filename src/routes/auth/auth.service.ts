@@ -149,8 +149,13 @@ export class AuthService {
 
       expiresAt: new Date(refreshTokenDecoded.exp * 1000),
     });
-
-    return tokens;
+    const { accessToken, refreshToken } = tokens;
+    return {
+      email: loginUser.email,
+      name: loginUser.name,
+      accessToken,
+      refreshToken,
+    };
   }
   async validateUserJWTDecoded(accessTokenDecoded: AccessTokenDecoded) {
     const userDb = await this.authRepository.findUserByEmailOrId({ id: accessTokenDecoded.userId });
