@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from 'generated/prisma/client';
 import { TableCreateInput } from 'generated/prisma/models';
 import { randomUUID } from 'node:crypto';
+import { TableFilterBodyDTO } from 'src/routes/tables/table.dto';
 import { envConfig } from 'src/shared/config/env.config';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { normalizePagination, prismaPaginate } from 'src/shared/helpers/pagination.helpers';
@@ -39,6 +40,26 @@ export interface PaginatedResponseDTO<T> {
 export class TableRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
+  async getTableStatusCounts() {
+    const result = await this.prismaService.table.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+
+    const formatted = result.reduce<Record<string, number>>((acc, item) => {
+      acc[item.status] = item._count.status;
+      return acc;
+    }, {});
+
+    const total = Object.values(formatted).reduce((sum, val) => sum + val, 0);
+
+    return {
+      ALL: total,
+      ...formatted,
+    };
+  }
   async createQrForTable(tableData: TableCreateInput) {
     return this.prismaService.$transaction(async (tx) => {
       const table = await tx.table.create({
@@ -62,10 +83,25 @@ export class TableRepository {
     });
   }
 
-  async findAll(pageable: PaginationDTOQuery, code: string): Promise<PaginatedResponseDTO<TableDTO>> {
+  async findAll(
+    pageable: PaginationDTOQuery & TableFilterBodyDTO,
+    code: string,
+  ): Promise<PaginatedResponseDTO<TableDTO>> {
     const { page, size } = normalizePagination(pageable);
+    const where: Prisma.TableWhereInput = {
+      ...(pageable.search && {
+        name: {
+          contains: pageable.search,
+          mode: 'insensitive',
+        },
+      }),
+    };
+    if (pageable.statusFilter != 'ALL') {
+      where.status = pageable.statusFilter;
+    }
 
     const args = {
+      where,
       select: {
         id: true,
         name: true,
@@ -75,6 +111,7 @@ export class TableRepository {
         qr: {
           select: { token: true },
         },
+
         orders: {
           select: {
             items: {

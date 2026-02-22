@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { I18nContext, I18nService } from 'nestjs-i18n';
 import { I18nTranslations } from 'src/generated/i18n.generated';
-import { TableCreateBodyDTO } from 'src/routes/tables/table.dto';
+import { TableCreateBodyDTO, TableFilterBodyDTO } from 'src/routes/tables/table.dto';
 import { TableRepository } from 'src/routes/tables/table.repository';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 
@@ -12,10 +12,10 @@ export class TableService {
     private readonly i18n: I18nService<I18nTranslations>,
   ) {}
 
-  async getListTable(query: PaginationDTOQuery) {
-        const code = I18nContext.current()?.lang as string;
+  async getListTable(query: PaginationDTOQuery & TableFilterBodyDTO) {
+    const code = I18nContext.current()?.lang as string;
 
-    return this.tableRepository.findAll(query,code);
+    return this.tableRepository.findAll(query, code);
   }
 
   async createTable(table: TableCreateBodyDTO) {
@@ -40,5 +40,8 @@ export class TableService {
         }),
       });
     return qrTable;
+  }
+  async getTableStatusCounts() {
+    return this.tableRepository.getTableStatusCounts();
   }
 }
