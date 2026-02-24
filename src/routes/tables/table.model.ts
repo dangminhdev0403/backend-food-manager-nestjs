@@ -1,4 +1,4 @@
-import { TableCreateInputObjectZodSchema } from 'generated/zod-validator/schemas';
+import { TableCreateInputObjectZodSchema, TableUpdateInputObjectSchema } from 'generated/zod-validator/schemas';
 import z from 'zod';
 
 export enum TableStatus {
@@ -19,4 +19,14 @@ export const TabeFilterBodySchema = z
   .strict();
 export const TableCreateBodySchema = BaseTableSchema.strict();
 
+export const TableUpdateBodySchema = TableCreateInputObjectZodSchema.pick({
+  name: true,
+  capacity: true,
+  status: true,
+})
+  .partial()
+  .extend({
+    id: z.number().int().positive(),
+  })
+  .strict();
 export type TabeFilterBodySchemaType = z.infer<typeof TabeFilterBodySchema>;

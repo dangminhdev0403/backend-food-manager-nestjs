@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from 'generated/prisma/client';
 import { TableCreateInput } from 'generated/prisma/models';
 import { randomUUID } from 'node:crypto';
-import { TableFilterBodyDTO } from 'src/routes/tables/table.dto';
+import { TableFilterBodyDTO, TableUpdateBodyDTO } from 'src/routes/tables/table.dto';
 import { envConfig } from 'src/shared/config/env.config';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { normalizePagination, prismaPaginate } from 'src/shared/helpers/pagination.helpers';
@@ -82,7 +82,25 @@ export class TableRepository {
       };
     });
   }
-
+  async updateTable(tableData: TableUpdateBodyDTO) {
+    const { id, name, capacity, status } = tableData;
+    // if (status == 'EMPTY') {
+    //    await this.prismaService.
+    //  }
+    return this.prismaService.table.update({
+      where: { id },
+      data: {
+        name,
+        capacity,
+        status,
+      },
+    });
+  }
+  async deleteTable(id: number) {
+    return this.prismaService.table.delete({
+      where: { id },
+    });
+  }
   async findAll(
     pageable: PaginationDTOQuery & TableFilterBodyDTO,
     code: string,
@@ -130,6 +148,9 @@ export class TableRepository {
             },
           },
         },
+      },
+      orderBy: {
+        id: 'desc',
       },
     } satisfies Prisma.TableFindManyArgs;
     const data = await prismaPaginate(this.prismaService.table, args, page, size);
