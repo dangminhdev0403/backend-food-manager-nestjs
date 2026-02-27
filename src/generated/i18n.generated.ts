@@ -21,6 +21,7 @@ export type I18nTranslations = {
         "VALIDATION_FAILED": string;
         "INVALID_ID": string;
         "INVALID_PAYLOAD": string;
+        "TABLE_NOT_EMPTY": string;
         "CATEGORY_NOT_FOUND": string;
         "CATEGORY_ALREADY_EXISTS": string;
         "CATEGORY_TRANSLATION_REQUIRED": string;

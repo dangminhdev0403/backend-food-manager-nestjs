@@ -156,7 +156,25 @@ export class TableRepository {
     const data = await prismaPaginate(this.prismaService.table, args, page, size);
     return this.formatTables(data);
   }
+  async customerFindAll(query: PaginationDTOQuery, code: string) {
+    const { page, size } = normalizePagination(query);
 
+    const args = {
+      where: {
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        capacity: true,
+      },
+      orderBy: {
+        id: 'desc',
+      },
+    } satisfies Prisma.TableFindManyArgs;
+    return await prismaPaginate(this.prismaService.table, args, page, size);
+  }
   async resolveByQr(token: string) {
     return await this.prismaService.tableQRCode.findUnique({
       where: { token },
@@ -192,5 +210,12 @@ export class TableRepository {
       })),
       meta: data.meta,
     };
+  }
+  async findTableById(id: number) {
+    return await this.prismaService.table.findFirst({
+      where: {
+        id
+      }
+    });
   }
 }

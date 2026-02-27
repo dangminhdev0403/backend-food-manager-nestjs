@@ -17,6 +17,9 @@ export const PUBLIC_PATTERNS = [
   '/categories/**',
   '/products/**',
   '/guest/**',
+  '/tables/scan/**',
+  '/tables/list/**',
+  '/tables/detail/**',
 ];
 
 /**

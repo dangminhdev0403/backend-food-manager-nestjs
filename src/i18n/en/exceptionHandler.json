@@ -6,6 +6,7 @@
   "VALIDATION_FAILED": "Validation failed.",
   "INVALID_ID": "Invalid identifier.",
   "INVALID_PAYLOAD": "Invalid request payload.",
+  "TABLE_NOT_EMPTY": "Table is used.",
 
   "CATEGORY_NOT_FOUND": "Category not found.",
   "CATEGORY_ALREADY_EXISTS": "Category already exists.",
