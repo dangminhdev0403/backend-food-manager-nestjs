@@ -1,12 +1,10 @@
-import { Controller, Get, Param, ParseIntPipe, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductService } from 'src/routes/products/product.service';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
-import { AuthorizationGuard } from 'src/shared/guard/authorization.guard';
 
 @ApiTags('API sản phẩn ')
 @Controller('products')
-@UseGuards(AuthorizationGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Get()

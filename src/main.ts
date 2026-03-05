@@ -33,7 +33,7 @@ async function bootstrap() {
     origin: ['http://192.168.1.11:3000', 'http://localhost:3000', 'http://192.168.1.16:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-table-session'],
   });
   // Global Guard: JwtAuthGuard
   const reflector = app.get(Reflector);

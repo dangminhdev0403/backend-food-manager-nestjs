@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Logger, Param, ParseIntPipe, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChooseItemsOrderBodyDto, OrderGuestCreateBodyDto } from 'src/routes/orders/order.dto';
 import { OrderService } from 'src/routes/orders/order.service';
@@ -27,7 +27,7 @@ export class GuestOrderController {
     description: 'Khách chọn món ',
   })
   async chooseItems(@Body() dto: ChooseItemsOrderBodyDto, @Request() req: RequestGuest) {
-    return this.orderService.chooseItems(dto, req.id);
+    return this.orderService.chooseItems(dto, req.tableSession.id);
   }
 
   @Get()
@@ -36,6 +36,6 @@ export class GuestOrderController {
     description: 'Khách xem chi tiết đơn hàng ',
   })
   getOrder(@Request() req: RequestGuest) {
-    return this.orderService.getGuestOrder(req.id);
+    return this.orderService.getGuestOrder(req.tableSession.id);
   }
 }

@@ -5,9 +5,11 @@ export interface RequestLogined extends Request {
   user: UserInRequest;
 }
 export interface RequestGuest {
-  id: number;
-  tableId: number;
-  token: string;
+  tableSession: {
+    id: number;
+    tableId: number;
+    token: string;
+  };
 }
 export interface UserInRequest {
   id: number;

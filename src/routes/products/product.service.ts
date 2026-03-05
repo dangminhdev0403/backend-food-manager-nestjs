@@ -102,7 +102,7 @@ export class ProductService {
 
   async getListProduct(query: PaginationDTOQuery) {
     const code = I18nContext.current()?.lang as string;
-    return this.productRepository.findAll(query, code);
+    return this.productRepository.findAllByCustomer(query, code);
   }
 
   async findById(id: number) {

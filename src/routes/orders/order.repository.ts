@@ -195,7 +195,7 @@ export class OrderRepository {
   }
 
   async guestGetOrder(idSessionTable: number, code: string) {
-    return this.prismaService.order.findFirst({
+    const order = await this.prismaService.order.findFirst({
       where: {
         tableSessionId: idSessionTable,
       },
@@ -224,5 +224,22 @@ export class OrderRepository {
         total: true,
       },
     });
+
+    if (!order) return null;
+
+    return {
+      id: order.id,
+      guestName: order.guestName,
+      status: order.status,
+      totalPrice: order.total,
+      items: order.items.map((item) => ({
+        id: item.id,
+        name: item.orderItemTranslations[0]?.name ?? null,
+        description: item.orderItemTranslations[0]?.description ?? null,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.price * item.quantity,
+      })),
+    };
   }
 }
