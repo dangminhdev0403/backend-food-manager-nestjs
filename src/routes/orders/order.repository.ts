@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from 'generated/prisma/client';
+import { Prisma } from '../../../generated/prisma/client';
 import { PrismaService } from 'src/shared/services/prisma.service';
 
 @Injectable()
@@ -214,9 +214,11 @@ export class OrderRepository {
               },
               select: {
                 name: true,
+
                 description: true,
               },
             },
+            productId: true,
             price: true,
             quantity: true,
           },
@@ -234,9 +236,11 @@ export class OrderRepository {
       totalPrice: order.total,
       items: order.items.map((item) => ({
         id: item.id,
+
         name: item.orderItemTranslations[0]?.name ?? null,
         description: item.orderItemTranslations[0]?.description ?? null,
         price: item.price,
+        productId: item.productId,
         quantity: item.quantity,
         total: item.price * item.quantity,
       })),

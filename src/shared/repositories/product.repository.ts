@@ -140,25 +140,25 @@ export class ProductRepository {
         },
       },
     } satisfies Prisma.ProductFindManyArgs;
-      const { items, meta } = await prismaPaginate(this.prismaService.product, args, page, size);
+    const { items, meta } = await prismaPaginate(this.prismaService.product, args, page, size);
 
-     const normalized = items.map((item) => ({
-       id: item.id,
-       basePrice: item.basePrice,
-       virtualPrice: item.virtualPrice,
-       name: item.ProductTranslation[0]?.name ?? null,
-       description: item.ProductTranslation[0]?.description ?? null,
-       cookingInstructions: item.ProductTranslation[0]?.cookingInstructions ?? null,
-       images: item.images.map((img) => img.url),
-     }));
-     return {
-       items: normalized,
-       meta,
-     };
+    const normalized = items.map((item) => ({
+      id: item.id,
+      basePrice: item.basePrice,
+      virtualPrice: item.virtualPrice,
+      name: item.ProductTranslation[0]?.name ?? null,
+      description: item.ProductTranslation[0]?.description ?? null,
+      cookingInstructions: item.ProductTranslation[0]?.cookingInstructions ?? null,
+      images: item.images.map((img) => img.url),
+    }));
+    return {
+      items: normalized,
+      meta,
+    };
   }
 
   async findById(id: number, code: string) {
-    return this.prismaService.product.findFirst({
+    const productDb = await this.prismaService.product.findFirst({
       where: {
         id,
         ProductTranslation: {
@@ -180,8 +180,22 @@ export class ProductRepository {
             cookingInstructions: true,
           },
         },
+        images: {
+          select: {
+            url: true,
+          },
+        },
       },
     });
+    return {
+      name: productDb?.ProductTranslation[0]?.name ?? null,
+
+      cookingInstructions: productDb?.ProductTranslation[0]?.cookingInstructions ?? null,
+      images: productDb?.images.map((img) => img.url) ?? null,
+      id: productDb?.id,
+      basePrice: productDb?.basePrice,
+      virtualPrice: productDb?.virtualPrice,
+    };
   }
   async softDelete(productId: number, userId: number) {
     return this.prismaService.product.update({

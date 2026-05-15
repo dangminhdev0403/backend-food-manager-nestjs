@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from 'generated/prisma/client';
-import { LanguageCreateInput, LanguageUncheckedUpdateInput } from 'generated/prisma/models';
+import { Prisma } from '../../../generated/prisma/client';
+import { LanguageCreateInput, LanguageUncheckedUpdateInput } from '../../../generated/prisma/models';
 import { PaginationDTOQuery } from 'src/shared/constants/request.constant';
 import { normalizePagination, prismaPaginate } from 'src/shared/helpers/pagination.helpers';
 
