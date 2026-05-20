@@ -49,8 +49,6 @@ Restaurant and table ordering management backend built with:
         ├── app.service.ts
         ├── main.ts
     └── 📁test
-        ├── app.e2e-spec.ts
-        ├── jest-e2e.json
 ```
 
 ## Application structure

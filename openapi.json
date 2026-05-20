@@ -1,0 +1,1915 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/roles": {
+      "post": {
+        "description": "Tạo mới một vai trò trong hệ thống ",
+        "operationId": "RoleController_createRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleCreateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Tạo vai trò",
+        "tags": [
+          "Vai trò"
+        ]
+      },
+      "get": {
+        "description": "Lấy danh sách vai trò ",
+        "operationId": "RoleController_getRole",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Danh sách vai trò",
+        "tags": [
+          "Vai trò"
+        ]
+      },
+      "put": {
+        "description": "Cập nhật thông tin vai trò ",
+        "operationId": "RoleController_updateRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cập nhật vai trò",
+        "tags": [
+          "Vai trò"
+        ]
+      },
+      "delete": {
+        "description": "Xoá vai trò khỏi hệ thống (soft delete nếu hỗ trợ)",
+        "operationId": "RoleController_deleteRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá vai trò",
+        "tags": [
+          "Vai trò"
+        ]
+      }
+    },
+    "/roles/{roleId}/permissions": {
+      "get": {
+        "description": "Lấy danh sách quyền theo vai trò cụ thể",
+        "operationId": "RoleController_getPermissionByRoleId",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Danh sách quyền của vai trò",
+        "tags": [
+          "Vai trò"
+        ]
+      }
+    },
+    "/permissions": {
+      "get": {
+        "description": "Lấy danh sách quyền có phân trang",
+        "operationId": "PermissionController_getAllPermission",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách quyền",
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/users/{id}/roles": {
+      "get": {
+        "operationId": "UserController_getUserRoles",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy vai trò theo người dùng",
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "operationId": "UserController_assignRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Gán vai trò cho người dùng",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_removeRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Gỡ vai trò khỏi người dùng",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/profile/me": {
+      "get": {
+        "operationId": "ProfileController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User: get Profile",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/profile/change-password": {
+      "put": {
+        "operationId": "ProfileController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePassBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User: Update Pass",
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/media/images/upload": {
+      "post": {
+        "description": "Upload image",
+        "operationId": "MediaController_uploadFile",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Media",
+        "tags": [
+          "Media"
+        ]
+      }
+    },
+    "/products": {
+      "get": {
+        "description": "Lấy danh sách  một món ăn ",
+        "operationId": "ProductController_getListProduct",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách món ăn",
+        "tags": [
+          "API sản phẩn "
+        ]
+      }
+    },
+    "/products/get-one/{id}": {
+      "get": {
+        "description": "Thực hiện xoá mềm món ăn theo ID.",
+        "operationId": "ProductController_getProductById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá món ăn",
+        "tags": [
+          "API sản phẩn "
+        ]
+      }
+    },
+    "/admin/products": {
+      "post": {
+        "description": "Tạo mới một món ăn ",
+        "operationId": "AdminProductController_createProduct",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCreateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Tạo món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      },
+      "put": {
+        "description": "Cập nhật  một món ăn ",
+        "operationId": "AdminProductController_updateProduct",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cập nhật món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      },
+      "get": {
+        "description": "Lấy danh sách  một món ăn ",
+        "operationId": "AdminProductController_getListProduct",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      }
+    },
+    "/admin/products/get-one/{id}": {
+      "get": {
+        "description": "Thực hiện xoá mềm món ăn theo ID.",
+        "operationId": "AdminProductController_getProductById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      }
+    },
+    "/admin/products/{id}": {
+      "delete": {
+        "description": "Thực hiện xoá mềm món ăn theo ID.",
+        "operationId": "AdminProductController_deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      },
+      "put": {
+        "description": "Thực hiện Khôi phục  món ăn đã xoá.",
+        "operationId": "AdminProductController_restoreCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Khôi phục món ăn",
+        "tags": [
+          "Admin Quản lí sản phẩm"
+        ]
+      }
+    },
+    "/languages": {
+      "get": {
+        "description": "Lấy danh sách ngôn ngữ trong hệ thông ",
+        "operationId": "UserLanguagesController_getListLanguage",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách ngôn ngữ",
+        "tags": [
+          " Ngôn ngữ "
+        ]
+      }
+    },
+    "/languages/get-one/{id}": {
+      "get": {
+        "description": "Lấy ngôn ngữ theo ID trong hệ thông ",
+        "operationId": "UserLanguagesController_getLanguage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy ngôn ngữ theo ID",
+        "tags": [
+          " Ngôn ngữ "
+        ]
+      }
+    },
+    "/admin/languages": {
+      "post": {
+        "description": "Tạo mới một ngôn ngữ trong hệ thống ",
+        "operationId": "AdminLanguagesController_createLanguage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageCreateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Tạo ngôn ngữ",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      },
+      "get": {
+        "description": "Lấy danh sách ngôn ngữ trong hệ thông ",
+        "operationId": "AdminLanguagesController_getListLanguage",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách ngôn ngữ",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      },
+      "delete": {
+        "description": "Xoá ngôn ngữ  trong hệ thông ",
+        "operationId": "AdminLanguagesController_deleteLanguage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageDeleteBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá ngôn ngữ theo ID",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      },
+      "put": {
+        "description": "Cập nhật ngôn ngữ  trong hệ thông ",
+        "operationId": "AdminLanguagesController_updateLanguage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cập nhật ngôn ngữ",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      }
+    },
+    "/admin/languages/get-one/{id}": {
+      "get": {
+        "description": "Lấy ngôn ngữ theo ID trong hệ thông ",
+        "operationId": "AdminLanguagesController_getLanguage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy ngôn ngữ theo ID",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      }
+    },
+    "/admin/languages/restore": {
+      "put": {
+        "description": "Khôi phục  ngôn ngữ xoá mềm  trong hệ thông ",
+        "operationId": "AdminLanguagesController_restoreLanguage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LanguageUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Khôi phục  ngôn ngữ xoá mềm",
+        "tags": [
+          "Admin quản lí ngôn ngữ "
+        ]
+      }
+    },
+    "/categories": {
+      "get": {
+        "description": "Trả về danh sách tất cả danh mục chưa bị xoá trong hệ thống.",
+        "operationId": "UserCategoryController_getListCategory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách danh mục",
+        "tags": [
+          "Danh mục sản phẩm"
+        ]
+      }
+    },
+    "/categories/get-one/{id}": {
+      "get": {
+        "description": "Lấy thông tin chi tiết của một danh mục theo ID.",
+        "operationId": "UserCategoryController_getCategoryDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy chi tiết danh mục",
+        "tags": [
+          "Danh mục sản phẩm"
+        ]
+      }
+    },
+    "/admin/categories": {
+      "get": {
+        "description": "Trả về danh sách tất cả danh mục chưa bị xoá trong hệ thống.",
+        "operationId": "AdminCategoryController_getListCategory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy danh sách danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      },
+      "post": {
+        "description": "Tạo một danh mục mới trong hệ thống.",
+        "operationId": "AdminCategoryController_createCategory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryCreateBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Tạo mới danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      },
+      "patch": {
+        "description": "Cập nhật thông tin của một danh mục đã tồn tại.",
+        "operationId": "AdminCategoryController_updateCategory",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdateBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cập nhật danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      }
+    },
+    "/admin/categories/get-one/{id}": {
+      "get": {
+        "description": "Lấy thông tin chi tiết của một danh mục theo ID.",
+        "operationId": "AdminCategoryController_getCategoryDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lấy chi tiết danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      }
+    },
+    "/admin/categories/{id}": {
+      "delete": {
+        "description": "Thực hiện xoá mềm danh mục theo ID.",
+        "operationId": "AdminCategoryController_deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Xoá danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      },
+      "put": {
+        "description": "Thực hiện Khôi phục  danh mục đã xoá.",
+        "operationId": "AdminCategoryController_restoreCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Khôi phục danh mục",
+        "tags": [
+          "Admin quản lý Danh mục"
+        ]
+      }
+    },
+    "/tables/scan/{token}": {
+      "get": {
+        "operationId": "TableController_scan",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Table"
+        ]
+      }
+    },
+    "/tables/list": {
+      "get": {
+        "operationId": "TableController_geListTable",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 9007199254740991,
+              "default": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Table"
+        ]
+      }
+    },
+    "/tables/detail/{id}": {
+      "get": {
+        "operationId": "TableController_getDetailTable",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Table"
+        ]
+      }
+    },
+    "/admin/tables": {
+      "post": {
+        "operationId": "AdminTableController_createTable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableCreateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin Quản lí bàn ăn"
+        ]
+      },
+      "put": {
+        "operationId": "AdminTableController_updateTable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin Quản lí bàn ăn"
+        ]
+      },
+      "get": {
+        "operationId": "AdminTableController_getListTable",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin Quản lí bàn ăn"
+        ]
+      },
+      "delete": {
+        "operationId": "AdminTableController_deleteTable",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableUpdateBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin Quản lí bàn ăn"
+        ]
+      }
+    },
+    "/admin/tables/status-count": {
+      "get": {
+        "operationId": "AdminTableController_getTableStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Admin Quản lí bàn ăn"
+        ]
+      }
+    },
+    "/guest/orders": {
+      "post": {
+        "description": "Tạo TableSession và trả token cho khách",
+        "operationId": "GuestOrderController_createTableSession",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderGuestCreateBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Khách điền tên vào bàn",
+        "tags": [
+          "Guest gọi món"
+        ]
+      },
+      "get": {
+        "description": "Khách xem chi tiết đơn hàng ",
+        "operationId": "GuestOrderController_getOrder",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Khách xem chi tiết đơn hàng",
+        "tags": [
+          "Guest gọi món"
+        ]
+      }
+    },
+    "/guest/orders/choose-items": {
+      "post": {
+        "description": "Khách chọn món ",
+        "operationId": "GuestOrderController_chooseItems",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChooseItemsOrderBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Khách chọn món",
+        "tags": [
+          "Guest gọi món"
+        ]
+      }
+    },
+    "/users/orders": {
+      "post": {
+        "operationId": "UserOrderController_createOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderUsertCreateBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User gọi món"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_registerUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "User register",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/otp": {
+      "post": {
+        "operationId": "AuthController_sendOTP",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendOTPBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User send OTP",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "operationId": "AuthController_refreshToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User get Refresh Token",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutBodyDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "User logout",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API Documentation",
+    "description": "REST Service",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RoleCreateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "description": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "permissionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      },
+      "RoleUpdateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "description": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "permissionIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "id": {
+            "type": "number",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "addPermissionIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "removePermissionIds": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ChangePassBodyDTO": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "confirmPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "refreshToken": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword",
+          "confirmPassword",
+          "refreshToken"
+        ]
+      },
+      "ProductCreateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "basePrice": {
+            "type": "number",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "virtualPrice": {
+            "type": "number",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "imagesId": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "categoryId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "translations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string"
+                },
+                "cookingInstructions": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "languageId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "languageId"
+              ],
+              "additionalProperties": false
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "basePrice",
+          "virtualPrice",
+          "categoryId",
+          "translations"
+        ]
+      },
+      "ProductUpdateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "basePrice": {
+            "type": "number",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "virtualPrice": {
+            "type": "number",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "imagesId": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "categoryId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "translations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "maxLength": 500
+                },
+                "description": {
+                  "type": "string"
+                },
+                "cookingInstructions": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "languageId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "name",
+                "description",
+                "languageId"
+              ],
+              "additionalProperties": false
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "cookingInstructions": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "LanguageCreateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 10,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "name",
+          "code"
+        ]
+      },
+      "LanguageDeleteBodyDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "isHard": {
+            "type": "boolean",
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "id",
+          "isHard"
+        ]
+      },
+      "LanguageUpdateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 500,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 10,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "id": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "CategoryCreateBodyDto": {
+        "type": "object",
+        "properties": {
+          "translations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "languageId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "languageId",
+                "name",
+                "description"
+              ]
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "translations"
+        ]
+      },
+      "CategoryUpdateBodyDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "translations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "languageId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "languageId"
+              ]
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "categoryId",
+          "translations"
+        ]
+      },
+      "TableCreateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "name",
+          "capacity"
+        ]
+      },
+      "TableUpdateBodyDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EMPTY",
+              "OCCUPIED",
+              "RESERVED"
+            ],
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "OrderGuestCreateBodyDto": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "guestName": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "tableId",
+          "guestName"
+        ]
+      },
+      "ChooseItemsOrderBodyDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "items": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "productId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "quantity": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "productId",
+                "quantity"
+              ]
+            },
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "orderId",
+          "items"
+        ]
+      },
+      "OrderUsertCreateBodyDto": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "tableId"
+        ]
+      },
+      "RegisterBodyDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100,
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "confirmPassword": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 100,
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "phoneNumber": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-empty-type": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          },
+          "code": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6,
+            "x-nestjs_zod-has-null": true,
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "password"
+        ]
+      },
+      "SendOTPBodyDTO": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "REGISTER",
+              "FORGOT_PASSWORD"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "type"
+        ]
+      },
+      "LogoutBodyDTO": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "x-nestjs_zod-parent-additional-properties": false
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      }
+    }
+  }
+}

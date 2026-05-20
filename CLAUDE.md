@@ -17,7 +17,7 @@ Focus on:
 - `docs/PROJECT-RULES.md`
 - `docs/ARCHITECTURE.md`
 - `docs/DATABASE.md`
-- `docs/API_SPEC.md`
+- `../shared-docs/API_SPEC.md`
 - `docs/PROJECT-STATUS.md`
 
 ## Commands
@@ -74,14 +74,14 @@ Use this format:
 #### Request
 
 ```json
-{}
+{ varName : typeData }
 ```
 ````
 
 #### Response
 
 ```json
-{}
+{ varName : typeData }
 ```
 
 #### Errors

@@ -28,5 +28,49 @@ export class UserRepository {
       ...(select && { select }),
     });
   }
-  
+
+  async getUserRoleIds(userId: number) {
+    const roles = await this.prismaService.userHasRole.findMany({
+      where: { userId },
+      select: { roleId: true },
+    });
+
+    return roles.map((r) => r.roleId);
+  }
+
+  async getRolesByUserId(userId: number) {
+    return this.prismaService.userHasRole.findMany({
+      where: { userId },
+      select: {
+        role: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            isSystem: true,
+          },
+        },
+      },
+      orderBy: { roleId: 'asc' },
+    });
+  }
+
+  async assignRoleToUser(userId: number, roleId: number) {
+    return this.prismaService.userHasRole.create({
+      data: { userId, roleId },
+      select: { roleId: true },
+    });
+  }
+
+  async removeRoleFromUser(userId: number, roleId: number) {
+    return this.prismaService.userHasRole.delete({
+      where: {
+        userId_roleId: {
+          userId,
+          roleId,
+        },
+      },
+      select: { roleId: true },
+    });
+  }
 }

@@ -6,8 +6,8 @@
 | ---------- | ---------- |
 | Language   | TypeScript |
 | Framework  | NestJS v11 |
-| ORM        | TypeORM    |
-| Database   | MySQL 8.x  |
+| ORM        | Prisma     |
+| Database   | PostgreSQL |
 
 ---
 
@@ -19,6 +19,8 @@
 
 ```
 src/
+├──prisma/
+   └── schema.prisma
 ├── routes/
 │   ├── auth/           # roles, users, JWT, guards
 │   ├── user-profile/   # addresses management
@@ -39,15 +41,13 @@ src/
 **Each feature folder:**
 
 ```
-routes/[feature-name]/
-├── [feature].module.ts
-├── [feature].controller.ts
+routes/[feature]/
 ├── [feature].service.ts
-├── repositories/[entity].repository.ts
-├── dto/create-[entity].dto.ts
-├── entities/[entity].entity.ts
-├── types/[feature].types.ts
-├── tests/[feature].service.spec.ts
+├── [feature].controller.ts
+├── dto/
+├── schemas/
+├── types/
+├── tests/
 └── CONTEXT.md
 ```
 
@@ -120,17 +120,19 @@ export class InsufficientStockException extends HttpException {
 ### Validation (DTOs)
 
 ```typescript
-// ✅ DO: class-validator in DTOs
-export class CreateProductDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @IsNumber()
-  @Min(0)
-  price: number;
-}
+// ✅ DO: Use Zod-based validation in DTOs
+Preferred pattern:
 ```
+
+ts
+import { z } from 'zod';
+
+export const CreateProductSchema = z.object({
+name: z.string().min(1),
+price: z.number().nonnegative(),
+});
+
+export type CreateProductDto = z.infer<typeof CreateProductSchema>;
 
 ### Response Format
 
@@ -152,10 +154,12 @@ export class CreateProductDto {
 @Injectable()
 export class ProductRepository {
   async findWithVariants(id: number): Promise<Product> {
-    return this.createQueryBuilder('product')
-      .leftJoinAndSelect('product.variants', 'variant')
-      .where('product.id = :id', { id })
-      .getOne();
+    return await this.prisma.product.findUnique({
+      where: { id },
+      include: {
+        variants: true,
+      },
+    });
   }
 }
 
@@ -262,13 +266,251 @@ describe('CartService', () => {
 // Guards
 @UseGuards(JwtAuthGuard, RolesGuard)
 
-// Transactions (checkout/order)
-const queryRunner = this.dataSource.createQueryRunner();
-await queryRunner.startTransaction();
-try {
-  // ... operations
-  await queryRunner.commitTransaction();
-} catch (err) {
-  await queryRunner.rollbackTransaction();
+// Prisma   Transactions (checkout/order)
+await this.prisma.$transaction(async (tx) => {
+  // transactional operations
+});
+```
+
+### Prisma Query Rules
+
+- Simple Prisma queries may stay inside services.
+- Complex reusable queries should be extracted into repository/query modules.
+- Avoid deeply nested Prisma includes.
+- Prefer select over include when possible.
+- Avoid overfetching relations.
+
+## Pagination Rules
+
+Prefer cursor pagination over offset pagination for:
+
+- mobile infinite scroll
+- product feeds
+- order history
+- reviews
+
+Preferred response:
+
+```ts
+{
+  data: [],
+  meta: {
+    cursor,
+    hasNextPage,
+    limit
+  }
 }
+```
+## API Documentation & Contract Synchronization
+
+This backend follows a contract-driven architecture.
+
+All API contracts must remain synchronized between:
+
+- runtime behavior
+- Zod validation
+- OpenAPI/Swagger
+- frontend/mobile integrations
+- generated typed clients
+- shared contract artifacts
+
+---
+
+## Contract Architecture
+
+```txt
+Zod Schemas
+    ↓
+Runtime Validation (ZodValidationPipe)
+    ↓
+OpenAPI / Swagger
+    ↓
+openapi.json
+    ↓
+../shared-docs/API_SPEC.json
+    ↓
+Next.js frontend
+Expo mobile app
+API integration layer
+typed client generation
+future admin dashboard
+AI agents
+```
+
+---
+
+## Machine-Readable Contract Source Of Truth
+
+Generated OpenAPI artifact:
+
+- `openapi.json`
+
+Shared exported contract artifact:
+
+- `../shared-docs/API_SPEC.json`
+
+`API_SPEC.json` is the machine-readable source of truth for:
+
+- Next.js frontend
+- Expo mobile app
+- API integration layer
+- React Query hooks
+- typed client generation
+- future admin dashboard
+- AI-assisted development
+- automated API synchronization
+
+---
+
+## Human-Readable Documentation Source Of Truth
+
+Human-maintained architecture/business documentation:
+
+- `../shared-docs/API_SPEC.md`
+
+`API_SPEC.md` is the human-readable source of truth for:
+
+- business flows
+- integration notes
+- auth flow
+- booking/order lifecycle
+- pagination strategy
+- websocket events
+- implementation notes
+- frontend/mobile behavior
+- architectural decisions
+
+---
+
+## Synchronization Triggers
+
+Whenever APIs are:
+
+- created
+- modified
+- renamed
+- deprecated
+- validation schema changed
+- response structure changed
+- pagination changed
+- filtering behavior changed
+- auth behavior changed
+- websocket event payload changed
+- DTO/request/response behavior changed
+
+AI must synchronize contracts in the same task/session.
+
+---
+
+## Required Synchronization Workflow
+
+After changing any backend API behavior:
+
+1. update runtime implementation
+2. keep Zod schemas synchronized with runtime behavior
+3. keep OpenAPI/Swagger synchronized with Zod schemas
+4. regenerate OpenAPI artifacts
+5. synchronize shared contract artifacts
+6. update human-readable documentation when business/integration behavior changes
+7. avoid contract drift between:
+   - runtime validation
+   - Swagger/OpenAPI
+   - generated contracts
+   - frontend/mobile integrations
+   - typed clients
+
+---
+
+## Required Commands
+
+```bash
+npm run openapi:generate
+npm run openapi:check
+```
+
+---
+
+## Generated Artifacts
+
+The following files are generated artifacts:
+
+- `openapi.json`
+- `../shared-docs/API_SPEC.json`
+
+AI must not manually maintain generated OpenAPI JSON artifacts when generation scripts exist.
+
+AI must not manually edit generated contract artifacts unless explicitly fixing the generator itself.
+
+Generated artifacts must always be regenerated via commands.
+
+---
+
+## Strict Validation Rules
+
+This backend uses Zod as the single source of truth for validation.
+
+Rules:
+
+- use Zod validation only
+- keep runtime validation aligned with OpenAPI
+- do not introduce class-validator
+- do not duplicate validation logic
+- do not manually invent frontend/mobile contracts
+- do not allow Swagger/OpenAPI drift
+- do not expose internal/private fields unintentionally
+
+---
+
+## Frontend/Mobile Stability Rules
+
+API contracts must remain stable for:
+
+- Next.js frontend
+- Expo mobile app
+- React Query cache keys
+- optimistic updates
+- infinite scroll pagination
+- websocket synchronization
+- typed client generation
+
+Breaking contract changes must always regenerate and synchronize OpenAPI artifacts.
+
+---
+
+## Drift Prevention
+
+The project uses deterministic OpenAPI generation and drift checks.
+
+Contract drift must be detected through:
+
+```bash
+npm run openapi:check
+```
+
+Any API change that alters generated OpenAPI artifacts without synchronization is considered invalid.
+
+---
+
+## CI/CD Policy
+
+OpenAPI drift checks should run in CI/CD pipelines and pull requests.
+
+Recommended workflow:
+
+```txt
+backend code change
+    ↓
+Zod schema change
+    ↓
+npm run openapi:generate
+    ↓
+openapi.json regenerated
+    ↓
+API_SPEC.json synchronized
+    ↓
+frontend/mobile typed clients updated
+    ↓
+npm run openapi:check
+    ↓
+CI validation passes
 ```

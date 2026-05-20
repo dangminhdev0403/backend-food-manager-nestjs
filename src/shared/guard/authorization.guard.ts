@@ -6,9 +6,9 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { HTTPMethod } from 'generated/prisma/enums';
 import { PermissionService } from 'src/routes/permissions/permission.service';
 import { RequestLogined } from 'src/shared/constants/auth.constant';
+import { HTTPMethod } from '../../../generated/prisma/enums';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
