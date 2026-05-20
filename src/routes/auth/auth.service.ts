@@ -153,6 +153,7 @@ export class AuthService {
     return {
       email: loginUser.email,
       name: loginUser.name,
+      avatar: loginUser.avatar,
       accessToken,
       refreshToken,
     };

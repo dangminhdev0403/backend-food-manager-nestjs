@@ -34,7 +34,7 @@ Focus on:
 
 After significant backend changes, update:
 
-- `docs/API_SPEC.md`
+- `@../shared-docs/API_SPEC.md`
 - `docs/PROJECT-STATUS.md`
 
 If database schema changes:
@@ -107,4 +107,5 @@ Use this format:
 - Do not invent endpoints.
 - Do not change business logic just to match docs.
 - After updating docs, report exactly which docs were updated.
+- After finnish a feature/moudle Send me the steps test
 ```

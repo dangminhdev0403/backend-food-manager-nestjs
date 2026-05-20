@@ -30,7 +30,7 @@ async function bootstrap() {
   }
 
   app.enableCors({
-    origin: ['http://192.168.1.11:3000', 'http://localhost:3000', 'http://192.168.1.16:3000'],
+    origin: ['http://192.168.1.11:3000', 'http://localhost:3000', 'http://192.168.1.16:3000', envConfig.PUBLIC_FONTENT_URL, envConfig.PUBLIC_MOBILE_URL],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-table-session'],

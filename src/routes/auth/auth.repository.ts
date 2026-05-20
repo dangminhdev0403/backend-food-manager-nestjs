@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { RefreshToken } from 'generated/prisma/browser';
-import { Prisma } from 'generated/prisma/client';
+
 import { DeviceType, RegisterBodyType, VerifyCationCodeType } from 'src/routes/auth/auth.model';
 import { TypeOfVerficationCodeType } from 'src/shared/constants/auth.constant';
 import { UserType } from 'src/shared/models/shared-user.model';
 import { PrismaService } from 'src/shared/services/prisma.service';
+import { Prisma, RefreshToken } from '../../../generated/prisma/client';
 
 @Injectable()
 export class AuthRepository {
